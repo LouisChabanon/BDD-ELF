@@ -1,0 +1,19 @@
+import customtkinter as ctk
+
+
+class MainPage(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+        
+        # Titre de la page principale
+        self.label = ctk.CTkLabel(self, text="Bienvenue dans la base de données ELF", font=("Helvetica", 24, "bold"))
+        self.label.pack(pady=40)
+
+        # Bouton de déconnexion
+        self.logout_button = ctk.CTkButton(self, text="Se déconnecter", font=("Helvetica", 16), command=self.logout)
+        self.logout_button.pack(pady=20)
+
+    def logout(self):
+        print("Utilisateur se déconnecte.")
+        self.controller.show_page("LoginPage")

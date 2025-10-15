@@ -15,7 +15,7 @@ def is_valid_email(email):
     return re.fullmatch(mail_regex, email)
 
 # Fonction pour envoyer un e-mail automatiquement
-def envoie_mail(destinataire, sujet, corps):
+def envoie_mail(destinataire: str, sujet: str, corps: str, schedule_time: str = None):
 
     assert resend_api_key is not None, "La clé API RESEND_API_KEY n'est pas définie dans les variables d'environnement."
     assert sender_email is not None, "L'adresse e-mail de l'expéditeur SENDER_EMAIL n'est pas définie dans les variables d'environnement."
@@ -33,6 +33,8 @@ def envoie_mail(destinataire, sujet, corps):
         "subject": sujet,
         "html": corps
     }
+    if schedule_time:
+        params["scheduleAt"] = schedule_time
 
     try:
         email = resend.Emails.send(params)
