@@ -6,6 +6,10 @@ class MainPage(ctk.CTkFrame):
         super().__init__(parent)
         self.controller = controller
         
+        # Ajout du bandeau supérieur
+        self.bandeau = Band_sup(self, controller, username="Alain Etienne")
+        self.bandeau.pack(fill="x", side="top")
+        
         # Titre de la page principale
         self.label = ctk.CTkLabel(self, text="Bienvenue dans la base de données ELF", font=("Helvetica", 24, "bold"))
         self.label.pack(pady=40)
@@ -14,9 +18,7 @@ class MainPage(ctk.CTkFrame):
         self.logout_button = ctk.CTkButton(self, text="Se déconnecter", font=("Helvetica", 16), command=self.logout)
         self.logout_button.pack(pady=20)
 
-        # Ajout du bandeau supérieur
-        self.bandeau = Band_sup(self, controller, username="Alain Etienne")
-        self.bandeau.pack(fill="x")
+        
 
 
     def logout(self):

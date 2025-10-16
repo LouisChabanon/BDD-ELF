@@ -6,6 +6,10 @@ class LoginPage(ctk.CTkFrame):
         super().__init__(parent)
         self.controller = controller
         
+        # Ajout du bandeau supérieur
+        self.bandeau = Band_sup(self, controller, username="Alain Etienne")
+        self.bandeau.pack(fill="x", side="top")
+
         # Titre de la page
         self.label = ctk.CTkLabel(self, text="Connexion à la base de données ELF", font=("Helvetica", 24, "bold"))
         self.label.pack(pady=40)
@@ -24,9 +28,7 @@ class LoginPage(ctk.CTkFrame):
         self.error_label = ctk.CTkLabel(self, text="", font=("Helvetica", 14), text_color="red")
         self.error_label.pack(pady=10)
 
-        # Ajout du bandeau supérieur
-        self.bandeau = Band_sup(self, controller, username="Nom Prénom")
-        self.bandeau.pack(fill="x")
+        
 
     def login(self):
         username = self.username_entry.get().strip()
