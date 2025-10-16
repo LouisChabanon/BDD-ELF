@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from components.bandeau_sup import Band_sup
 
 class LoginPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -22,6 +23,10 @@ class LoginPage(ctk.CTkFrame):
         # Message d'erreur
         self.error_label = ctk.CTkLabel(self, text="", font=("Helvetica", 14), text_color="red")
         self.error_label.pack(pady=10)
+
+        # Ajout du bandeau supérieur
+        self.bandeau = Band_sup(self, controller, username="Nom Prénom")
+        self.bandeau.pack(fill="x")
 
     def login(self):
         username = self.username_entry.get().strip()
