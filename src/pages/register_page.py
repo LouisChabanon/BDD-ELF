@@ -1,16 +1,12 @@
 import customtkinter as ctk
 
-class LoginPage(ctk.CTkFrame):
+class RegisterPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-
-
-        self.pack(fill="both", expand=True)
-
-
+        
         # Titre de la page
-        self.label = ctk.CTkLabel(self, text="Connexion à la base de données ELF", font=("Helvetica", 24, "bold"))
+        self.label = ctk.CTkLabel(self, text="Inscription à la base de données ELF", font=("Helvetica", 24, "bold"))
         self.label.pack(pady=40)
 
         # Identifiant
@@ -20,14 +16,11 @@ class LoginPage(ctk.CTkFrame):
         self.username_entry.pack(pady=10)
 
         # Fonction pour gérer l'appui sur la touche "Entrée"
-        self.username_entry.bind("<Return>", self.login)
+        self.username_entry.bind("<Return>", self.register)
 
-        # Bouton de connexion (aucune validation pour l'instant)
-        self.login_button = ctk.CTkButton(self, text="Se connecter", font=("Helvetica", 16), command=self.login)
-        self.login_button.pack(pady=20)
-
-        self.register_button = ctk.CTkButton(self, text="Inscription", font=("Helvetica", 16), command=lambda: controller.show_page("RegisterPage"))
-        self.register_button.pack(pady=10)
+        # Bouton d'inscription (aucune validation pour l'instant)
+        self.register_button = ctk.CTkButton(self, text="S'inscrire", font=("Helvetica", 16), command=self.register)
+        self.register_button.pack(pady=20)
 
         # Message d'erreur
         self.error_label = ctk.CTkLabel(self, text="", font=("Helvetica", 14), text_color="red")
@@ -35,14 +28,14 @@ class LoginPage(ctk.CTkFrame):
 
         self.username_entry.focus_set()
 
-    def login(self, manual=False):
+    def register(self, event=None):
         username = self.username_entry.get().strip()
-        print(f"Utilisateur '{username}' tente de se connecter.")
+        print(f"Utilisateur '{username}' tente de s'inscrire.")
 
         if not username:
             self.error_label.configure(text="Veuillez entrer un identifiant valide.")
             return
         
-        
+        # Ici, vous pouvez ajouter la logique d'inscription (ex: vérifier si l'utilisateur existe déjà, etc.)
 
         self.controller.show_page("MainPage")
