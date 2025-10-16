@@ -19,11 +19,11 @@ class Band_sup(ctk.CTkFrame):
         self.user_button.grid(row=0, column=0, sticky="w", padx=20, pady=10)
 
         # Bouton Ajouter objet 
-        self.add_button = ctk.CTkButton(self, text="Ajouter objet", font=("Helvetica", 16), fg_color="#BB2A89", text_color="white", command=self.go_to_add_page)
+        self.add_button = ctk.CTkButton(self, text="Ajouter objet", font=("Helvetica", 16), fg_color="#BB2A89", text_color="white", command=self.add_page)
         self.add_button.grid(row=0, column=1, sticky="e", padx=10, pady=10)
 
         # Bouton Rendre
-        self.return_button = ctk.CTkButton(self, text="Rendre", font=("Helvetica", 16), fg_color="#BB2A89", text_color="white", command=self.go_to_return_page)
+        self.return_button = ctk.CTkButton(self, text="Rendre", font=("Helvetica", 16), fg_color="#BB2A89", text_color="white", command=self.return_page)
         self.return_button.grid(row=0, column=2, sticky="e", padx=20, pady=10)
 
     # Méthodes associées aux boutons 
