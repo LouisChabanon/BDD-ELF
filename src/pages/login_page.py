@@ -5,6 +5,8 @@ class LoginPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
+
+        self.pack(fill="both", expand=True)
         
         # Ajout du bandeau supérieur
         self.bandeau = Band_sup(self, controller, username="Alain Etienne")
