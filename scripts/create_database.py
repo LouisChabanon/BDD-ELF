@@ -40,7 +40,7 @@ db_cursor.execute("CREATE TABLE Kit(nom_kit TEXT PRIMARY KEY)")
 db_cursor.execute("CREATE TABLE Historique(date_rendu TEXT PRIMARY KEY, FOREIGN KEY REFERENCE Materiel(id_materiel))")
 db_cursor.execute("CREATE TABLE Notice(notice_materiel TEXT PRIMARY KEY)")
 db_cursor.execute("CREATE TABLE Personnel(id_personnel INT PRIMARY KEY, mail TEXT, type_personnel TEXT, nom TEXT, prenom TEXT)")
-db_cursor .execute("CREATE TABLE Reservation(date_reservation TEXT, FOREIGN KEY REFERENCE Personnel(id_personnel), FOREIGN KEY Materiel(id_materiel))")
+db_cursor.execute("CREATE TABLE Reservation(date_reservation TEXT, FOREIGN KEY REFERENCE Personnel(id_personnel), FOREIGN KEY Materiel(id_materiel))")
 
 
 
