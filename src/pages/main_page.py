@@ -1,15 +1,18 @@
 import customtkinter as ctk
 from components.bandeau_sup import Band_sup
+from utils.session import get_session, clear_session
 
 class MainPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
 
+        self.refresh()
+
         self.pack(fill="both", expand=True)
         
         # Ajout du bandeau supérieur
-        self.bandeau = Band_sup(self, controller, username="Alain Etienne")
+        self.bandeau = Band_sup(self, controller)
         self.bandeau.pack(fill="x", side="top")
         
         # Titre de la page principale
@@ -21,8 +24,14 @@ class MainPage(ctk.CTkFrame):
         self.logout_button.pack(pady=20)
 
         
+    def refresh(self):
+        # Vérifier la session utilisateur
+        if get_session() is None:
+            print("Aucun utilisateur connecté, redirection vers la page de connexion.")
+            self.controller.show_page("LoginPage")
 
 
     def logout(self):
         print("Utilisateur se déconnecte.")
+        clear_session()
         self.controller.show_page("LoginPage")

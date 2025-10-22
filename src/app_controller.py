@@ -31,4 +31,7 @@ class AppController(ctk.CTk):
 
     def show_page(self, page_name):
         page = self.pages[page_name]
+
+        if hasattr(page, 'refresh'):
+            page.refresh()
         page.tkraise()

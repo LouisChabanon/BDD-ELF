@@ -1,5 +1,7 @@
 import customtkinter as ctk
 from components.bandeau_sup import Band_sup
+from utils.session import set_session
+from database.queries import get_user_by_id
 
 class LoginPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -9,7 +11,7 @@ class LoginPage(ctk.CTkFrame):
         self.pack(fill="both", expand=True)
         
         # Ajout du bandeau supérieur
-        self.bandeau = Band_sup(self, controller, username="Alain Etienne")
+        self.bandeau = Band_sup(self, controller)
         self.bandeau.pack(fill="x", side="top")
 
         # Titre de la page
@@ -46,6 +48,11 @@ class LoginPage(ctk.CTkFrame):
             self.error_label.configure(text="Veuillez entrer un identifiant valide.")
             return
         
+        user = get_user_by_id(username)
+        if user is None:
+            self.error_label.configure(text="Identifiant inconnu. Veuillez vous inscrire.")
+            return
         
-
+        print(f"Utilisateur '{username}' connecté avec succès.")
+        set_session(user)
         self.controller.show_page("MainPage")
