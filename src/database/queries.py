@@ -49,3 +49,17 @@ def add_material(id_materiel, date_garantie, date_dernier_entretient, derniere_l
 
     cursor = get_db().cursor()
     query = "INSERT INTO Materiel (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation) VALUES ('%s', '%s', '%s', '%s')" % (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation)
+    
+def add_matos(nom_materiel, photo_materiel, frequence_entretient):
+    
+    #verifier le format des données avant insertion
+    if not isinstance(nom_materiel, str):
+        raise ValueError("nom_materiel doit être une chaine de caractères.")
+    if not isinstance(photo_materiel, str):
+        raise ValueError("photo_materiel doit être une chaine de caractères.")
+    if not isinstance(frequence_entretient, str):
+        raise ValueError("frequence_entretient doit être une chaine de caractères.")
+
+
+    cursor = get_db().cursor()
+    query = "INSERT INTO Matos (nom_materiel, photo_materiel, frequence_entretient) VALUES ('%s', '%s', '%s')" % (nom_materiel, photo_materiel, frequence_entretient)
