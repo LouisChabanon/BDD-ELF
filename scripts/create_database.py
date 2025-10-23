@@ -3,12 +3,17 @@
 #Dès qu'il y a un changement, on renseigne le commit et on fait push
 
 
-
+import os
 import mysql.connector
+from dotenv import load_dotenv
+
+
+load_dotenv()
 db_connection = mysql.connector.connect(
-  	host="localhost",
-  	user="root",
-  	passwd="password"
+  	host=os.getenv("DB_HOST"),
+	port=os.getenv("DB_PORT"),
+  	user=os.getenv("DB_USER"),
+  	passwd=os.getenv("DB_PASSWORD")
     )
 
 
@@ -23,12 +28,13 @@ db_connection.close()
 
 
 
-import mysql.connector
+
 db_connection = mysql.connector.connect(
-  	host="localhost",
-  	user="root",
-  	passwd="password",
-    database="Inventaire_PJT"
+  	host=os.getenv("DB_HOST"),
+	port=os.getenv("DB_PORT"),
+  	user=os.getenv("DB_USER"),
+  	passwd=os.getenv("DB_PASSWORD"),
+	database=os.getenv("DB_NAME")
     )
 
 db_cursor = db_connection.cursor()
