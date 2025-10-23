@@ -104,7 +104,7 @@ def add_instructions(notice_materiel):
     query = "INSERT INTO Notice (notice_materiel) VALUES ('%s')" % (notice_materiel)
     cursor.execute(query)
     get_db().commit()
- m
+ 
     
 def add_storage(id_materiel, lieu_rangement):
     
@@ -132,16 +132,16 @@ def add_kit(nom_kit):
     get_db().commit()
   
     
-def add_kit_de_materiel(nom_kit, id_materiel):
+def add_kit_de_materiel(nom_kit, nom_materiel):
     
     #verifier le format des données avant insertion
     if not isinstance(nom_kit, str):
         raise ValueError("nom_kit doit être une chaine de caractère.")
-    if not isinstance(id_materiel, int):
-        raise ValueError("id_materiel doit être un entier.")
+    if not isinstance(nom_materiel, str):
+        raise ValueError("nom_materiel doit être une chaine de caractères.")
 
     cursor = get_db().cursor()
-    query = "INSERT INTO Kit (nom_kit, id_materiel) VALUES ('%s', '%s')" % (nom_kit, id_materiel)
+    query = "INSERT INTO Kit (nom_kit, nom_materiel) VALUES ('%s', '%s')" % (nom_kit, nom_materiel)
     cursor.execute(query)
     get_db().commit()
     
