@@ -37,22 +37,20 @@ db_connection = mysql.connector.connect(
 	database=os.getenv("DB_NAME")
     )
 
+#Implémentation des tables
 db_cursor = db_connection.cursor()
-
 db_cursor.execute("CREATE TABLE Materiel(id_materiel INT PRIMARY KEY, date_garantie TEXT, date_dernier_entretient TEXT, derniere_localisation TEXT) ")
 db_cursor.execute("CREATE TABLE Emprunt(id_emprunt INT PRIMARY KEY, motif TEXT, date_emprunt TEXT)")
 db_cursor.execute("CREATE TABLE Matos(nom_materiel VARCHAR(100) PRIMARY KEY, photo_materiel TEXT, frequence_entretient TEXT)")
 db_cursor.execute("CREATE TABLE Rangement(lieu_rangement VARCHAR(100) PRIMARY KEY)")
 db_cursor.execute("CREATE TABLE Kit(nom_kit VARCHAR(100) PRIMARY KEY)")
-
 db_cursor.execute("CREATE TABLE Historique(date_rendu VARCHAR(100) PRIMARY KEY, id_materiel INT, FOREIGN KEY (id_materiel) REFERENCES Materiel(id_materiel))")
-
 db_cursor.execute("CREATE TABLE Notice(notice_materiel VARCHAR(100) PRIMARY KEY)")
 db_cursor.execute("CREATE TABLE Personnel(id_personnel INT PRIMARY KEY, mail TEXT, type_personnel TEXT, nom TEXT, prenom TEXT)")
 db_cursor.execute("CREATE TABLE Reservation(date_reservation TEXT, id_personnel INT, id_materiel INT, FOREIGN KEY (id_personnel) REFERENCES Personnel(id_personnel), FOREIGN KEY (id_materiel) REFERENCES Materiel(id_materiel))")
 
 
-
+#Ajout de données dans les tables
 
 
 
