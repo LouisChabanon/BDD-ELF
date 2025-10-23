@@ -45,7 +45,6 @@ db_cursor.execute("CREATE TABLE Reservation(date_reservation TEXT, id_personnel 
 
 
 #Ajout de données dans les tables
-db_cursor.execute("INSERT INTO Personnel(id_personnel, mail, type_personnel, nom, prenom) VALUES(1, aungemuth@gmail.com, étudiant, ungemuth, adrien) ")
 
 
 
