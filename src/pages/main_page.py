@@ -7,8 +7,6 @@ class MainPage(ctk.CTkFrame):
         super().__init__(parent)
         self.controller = controller
 
-        self.refresh()
-
         self.pack(fill="both", expand=True)
         
         # Ajout du bandeau supérieur
@@ -23,12 +21,16 @@ class MainPage(ctk.CTkFrame):
         self.logout_button = ctk.CTkButton(self, text="Se déconnecter", font=("Helvetica", 16), command=self.logout)
         self.logout_button.pack(pady=20)
 
+        self.refresh()
+
         
     def refresh(self):
         # Vérifier la session utilisateur
         if get_session() is None:
             print("Aucun utilisateur connecté, redirection vers la page de connexion.")
             self.controller.show_page("LoginPage")
+
+        self.bandeau.refresh()
 
 
     def logout(self):
