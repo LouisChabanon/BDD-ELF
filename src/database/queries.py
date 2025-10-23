@@ -36,7 +36,7 @@ def add_user(id_personnel, mail, type_personnel, nom, prenom):
     get_db().commit()
 
     
-def add_material(id_materiel, date_garantie, date_dernier_entretient, derniere_localisation):
+def add_material(id_materiel, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel):
     
     #verifier le format des données avant insertion
     if not isinstance(id_materiel, int):
@@ -47,14 +47,16 @@ def add_material(id_materiel, date_garantie, date_dernier_entretient, derniere_l
         raise ValueError("date_dernier_entretient doit être une chaine de caractères.")
     if not isinstance(derniere_localisation, str):
         raise ValueError("dernière_localisation doit être une chaîne de caractères.")
+    if not isinstance(nom_materiel, str):
+        raise ValueError("nom_materiel doit être une chaîne de caractères.")
 
     cursor = get_db().cursor()
-    query = "INSERT INTO Materiel (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation) VALUES ('%s', '%s', '%s', '%s')" % (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation)
+    query = "INSERT INTO Materiel (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel) VALUES ('%s', '%s', '%s', '%s', '%s')" % (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel)
     cursor.execute(query)
     get_db().commit()
 
     
-def add_matos(nom_materiel, photo_materiel, frequence_entretient):
+def add_matos(nom_materiel, photo_materiel, frequence_entretient, notice_materiel):
     
     #verifier le format des données avant insertion
     if not isinstance(nom_materiel, str):
@@ -63,14 +65,16 @@ def add_matos(nom_materiel, photo_materiel, frequence_entretient):
         raise ValueError("photo_materiel doit être une chaine de caractères.")
     if not isinstance(frequence_entretient, str):
         raise ValueError("frequence_entretient doit être une chaine de caractères.")
-
+    if not isinstance(notice_materiel, str):
+        raise ValueError("notice_materiel doit être une chaine de caractère.")
+   
     cursor = get_db().cursor()
-    query = "INSERT INTO Matos (nom_materiel, photo_materiel, frequence_entretient) VALUES ('%s', '%s', '%s')" % (nom_materiel, photo_materiel, frequence_entretient)
+    query = "INSERT INTO Matos (nom_materiel, photo_materiel, frequence_entretient, nom_materiel) VALUES ('%s', '%s', '%s', '%s')" % (nom_materiel, photo_materiel, frequence_entretient, notice_materiel)
     cursor.execute(query)
     get_db().commit()
  
     
-def add_loan(id_emprunt, motif, date_emprunt):
+def add_loan(id_emprunt, motif, date_emprunt, id_materiel, id_personnel):
     
     #verifier le format des données avant insertion
     if not isinstance(id_emprunt, int):
@@ -79,9 +83,13 @@ def add_loan(id_emprunt, motif, date_emprunt):
         raise ValueError("motif doit être une chaine de caractères.")
     if not isinstance(date_emprunt, str):
         raise ValueError("date_emprunt doit être une chaine de caractères.")
+    if not isinstance(id_materiel, int):
+        raise ValueError("id_materiel doit être un entier.")
+    if not isinstance(id_personnel, int):
+        raise ValueError("id_personnel doit être un entier.")
 
     cursor = get_db().cursor()
-    query = "INSERT INTO Emprunt (id_emprunt, motif, date_emprunt) VALUES ('%s', '%s', '%s')" % (id_emprunt, motif, date_emprunt)
+    query = "INSERT INTO Emprunt (id_emprunt, motif, date_emprunt, id_materiel, id_personnel) VALUES ('%s', '%s', '%s','%s', '%s')" % (id_emprunt, motif, date_emprunt, id_materiel, id_personnel)
     cursor.execute(query)
     get_db().commit()
 
@@ -96,16 +104,18 @@ def add_instructions(notice_materiel):
     query = "INSERT INTO Notice (notice_materiel) VALUES ('%s')" % (notice_materiel)
     cursor.execute(query)
     get_db().commit()
- 
+ m
     
-def add_storage(lieu_rangement):
+def add_storage(id_materiel, lieu_rangement):
     
     #verifier le format des données avant insertion
+    if not isinstance(id_materiel, int):
+        raise ValueError("id_materiel doit être un entier.")
     if not isinstance(lieu_rangement, str):
         raise ValueError("lieu_rangement doit être une chaine de caractère.")
 
     cursor = get_db().cursor()
-    query = "INSERT INTO Rangement (lieu_rangement) VALUES ('%s')" % (lieu_rangement)
+    query = "INSERT INTO Rangement (id_materiel, lieu_rangement) VALUES ('%s', '%s')" % (id_materiel, lieu_rangement)
     cursor.execute(query)
     get_db().commit()
     
@@ -122,25 +132,46 @@ def add_kit(nom_kit):
     get_db().commit()
   
     
-def add_history(date_rendue):
+def add_kit_de_materiel(nom_kit, id_materiel):
+    
+    #verifier le format des données avant insertion
+    if not isinstance(nom_kit, str):
+        raise ValueError("nom_kit doit être une chaine de caractère.")
+    if not isinstance(id_materiel, int):
+        raise ValueError("id_materiel doit être un entier.")
+
+    cursor = get_db().cursor()
+    query = "INSERT INTO Kit (nom_kit, id_materiel) VALUES ('%s', '%s')" % (nom_kit, id_materiel)
+    cursor.execute(query)
+    get_db().commit()
+    
+def add_history(date_rendue, id_materiel, id_personnel):
     
     #verifier le format des données avant insertion
     if not isinstance(date_rendue, str):
         raise ValueError("date_rendue doit être une chaine de caractère.")
+    if not isinstance(id_materiel, int):
+        raise ValueError("id_materiel doit être un entier.")
+    if not isinstance(id_personnel, int):
+        raise ValueError("id_personnel doit être un entier.")
 
     cursor = get_db().cursor()
-    query = "INSERT INTO Historique (date_rendue) VALUES ('%s')" % (date_rendue)
+    query = "INSERT INTO Historique (date_rendue, id_materiel, id_personnel) VALUES ('%s', '%s', '%s'')" % (date_rendue, id_materiel, id_personnel)
     cursor.execute(query)
     get_db().commit()
     
     
-def add_reservation(date_reservation):
+def add_reservation(date_reservation, id_personnel, id_materiel):
     
     #verifier le format des données avant insertion
     if not isinstance(date_reservation, str):
         raise ValueError("date_reservation doit être une chaine de caractère.")
-
+    if not isinstance(id_personnel, int):
+        raise ValueError("id_personnel doit être un entier.")
+    if not isinstance(id_materiel, int):
+        raise ValueError("id_materiel doit être un entier.")
+    
     cursor = get_db().cursor()
-    query = "INSERT INTO Reservation (date_reservation) VALUES ('%s')" % (date_reservation)
+    query = "INSERT INTO Reservation (date_reservation, id_personnel, id_materiel) VALUES ('%s', '%s', '%s'')" % (date_reservation, id_personnel, id_materiel)
     cursor.execute(query)
     get_db().commit()
