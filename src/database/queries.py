@@ -63,3 +63,17 @@ def add_matos(nom_materiel, photo_materiel, frequence_entretient):
 
     cursor = get_db().cursor()
     query = "INSERT INTO Matos (nom_materiel, photo_materiel, frequence_entretient) VALUES ('%s', '%s', '%s')" % (nom_materiel, photo_materiel, frequence_entretient)
+    
+def add_loan(id_emprunt, motif, date_emprunt):
+    
+    #verifier le format des données avant insertion
+    if not isinstance(id_emprunt, int):
+        raise ValueError("id_emprunt doit être un entier.")
+    if not isinstance(motif, str):
+        raise ValueError("motif doit être une chaine de caractères.")
+    if not isinstance(date_emprunt, str):
+        raise ValueError("date_emprunt doit être une chaine de caractères.")
+
+
+    cursor = get_db().cursor()
+    query = "INSERT INTO Emprunt (id_emprunt, motif, date_emprunt) VALUES ('%s', '%s', '%s')" % (id_emprunt, motif, date_emprunt)   
