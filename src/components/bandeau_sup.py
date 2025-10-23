@@ -37,7 +37,7 @@ class Band_sup(ctk.CTkFrame):
         if self.user:
             # Bouton Nom Prénom utilisateur
             print(f"Bandeau supérieur : utilisateur actuel = {self.user}")
-            self.user_button = ctk.CTkButton(self, text=f"{self.user['prenom']} {self.user['nom']}", font=("Helvetica", 16, "bold"), fg_color="#BB2A89", text_color="white", width=150, command=self.show_user_info)
+            self.user_button = ctk.CTkButton(self, text=f"{self.user['prenom']} {self.user['nom']}", font=("Helvetica", 16, "bold"), fg_color="#BB2A89", text_color="white", width=150, command=lambda: self.controller.show_page("UserPage"))
             self.user_button.grid(row=0, column=0, sticky="w", padx=20, pady=10)
         else:
             # Bouton Connexion
