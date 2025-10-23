@@ -34,3 +34,18 @@ def add_user(id_personnel, mail, type_personnel, nom, prenom):
     query = "INSERT INTO Personnel (id_personnel, mail, type_personnel, nom, prenom) VALUES ('%s', '%s', '%s', '%s', '%s')" % (id_personnel, mail, type_personnel, nom, prenom)
     cursor.execute(query)
     get_db().commit()
+    
+def add_material(id_materiel, date_garantie, date_dernier_entretient, derniere_localisation):
+    
+    #verifier le format des données avant insertion
+    if not isinstance(id_materiel, int):
+        raise ValueError("id_materiel doit être un entier.")
+    if not isinstance(date_garantie, str):
+        raise ValueError("date_garantie doit être une chaine de caractères.")
+    if not isinstance(date_dernier_entretient, str):
+        raise ValueError("date_dernier_entretient doit être une chaine de caractères.")
+    if not isinstance(derniere_localisation, str):
+        raise ValueError("dernière_localisation doit être une chaîne de caractères.")
+
+    cursor = get_db().cursor()
+    query = "INSERT INTO Materiel (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation) VALUES ('%s', '%s', '%s', '%s')" % (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation)
