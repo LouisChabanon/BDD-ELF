@@ -49,6 +49,15 @@ class RegisterPage(ctk.CTkFrame):
         # Fonction pour gérer l'appui sur la touche "Entrée"
         self.username_entry.bind("<Return>", self.register)
 
+        # Bouton retour (en bas à droite)
+        self.back_button = ctk.CTkButton(
+            self,
+            text="Retour",
+            font=("Helvetica", 14),
+            command=lambda: controller.show_page("LoginPage")
+        )
+        self.back_button.place(relx=0.95, rely=0.95, anchor="se")
+
     def register(self, event=None):
         username = self.username_entry.get().strip()
         firstname = self.firstname_entry.get().strip()

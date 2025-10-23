@@ -38,4 +38,6 @@ class AppController(ctk.CTk):
 
         if hasattr(page, 'refresh'):
             page.refresh()
+
+        print(f"Affichage de la page : {page_name}")
         page.tkraise()

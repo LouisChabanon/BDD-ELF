@@ -7,26 +7,20 @@ class UserPage(ctk.CTkFrame):
         super().__init__(parent)
         self.controller = controller
 
+
         # Ajout du bandeau supérieur (commun à toutes les pages)
         self.bandeau = Band_sup(self, controller)
         self.bandeau.pack(fill="x", side="top")
+        self.bandeau.refresh()
 
         # Conteneur principal pour le contenu
         self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.main_frame.pack(expand=True)
 
-        # Récupération de la session utilisateur
-        session = get_session()
-        if session is None:
-            print("Aucun utilisateur connecté, redirection vers la page de connexion.")
-            controller.show_page("LoginPage")
-            return
 
-        # Nom et prénom de l'utilisateur
-        fullname = f"{session.get('prenom', 'Utilisateur')} {session.get('nom', '')}"
         self.name_label = ctk.CTkLabel(
             self.main_frame,
-            text=fullname,
+            text="",
             font=("Helvetica", 22, "bold")
         )
         self.name_label.pack(pady=(40, 20))
@@ -68,6 +62,17 @@ class UserPage(ctk.CTkFrame):
             command=lambda: controller.show_page("MainPage")
         )
         self.back_button.place(relx=0.95, rely=0.95, anchor="se")
+
+    def refresh(self):
+        """Actualise les informations de la page utilisateur"""
+        session = get_session()
+        if session:
+            fullname = f"{session.get('prenom', 'Utilisateur')} {session.get('nom', '')}"
+            self.name_label.configure(text=fullname)
+            print(f"Page utilisateur actualisée pour : {fullname}")
+        else:
+            print("Aucun utilisateur connecté lors de l'actualisation, redirection vers la page de connexion.")
+            self.controller.show_page("LoginPage")
 
     def logout(self):
         """Déconnexion de l'utilisateur"""
