@@ -16,6 +16,9 @@ class ProductPage(ctk.CTkFrame):
         if produit_id is not None:
             self.produit = self.get_produit_from_db(produit_id)
 
+        # Couleur de fond principale
+        self.configure(fg_color="#F9F7F0")
+
         # Bandeau supérieur
         self.bandeau = Band_sup(self, controller)
         self.bandeau.pack(fill="x", side="top")
@@ -31,7 +34,7 @@ class ProductPage(ctk.CTkFrame):
         self.photo_label = ctk.CTkLabel(self.photo_frame, text="Photos du matériel", font=("Helvetica", 18, "bold"))
         self.photo_label.pack(pady=(0, 10))
 
-        self.photo = ctk.CTkLabel(self.photo_frame, text="🖼️ Image\n(à insérer ici)", width=200, height=200, corner_radius=10, fg_color="gray20")
+        self.photo = ctk.CTkLabel(self.photo_frame, width=200, height=200, corner_radius=10, fg_color="gray20")
         self.photo.pack()
 
         # --- Section infos produit ---

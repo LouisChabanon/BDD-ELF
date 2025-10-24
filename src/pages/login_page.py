@@ -9,17 +9,20 @@ class LoginPage(ctk.CTkFrame):
         self.controller = controller
 
         self.pack(fill="both", expand=True)
-        
+
+        # Couleur de fond principale
+        self.configure(fg_color="#F9F7F0")
+
         # Ajout du bandeau supérieur
         self.bandeau = Band_sup(self, controller)
         self.bandeau.pack(fill="x", side="top")
 
         # Titre de la page
-        self.label = ctk.CTkLabel(self, text="Connexion à la base de données ELF", font=("Helvetica", 24, "bold"))
+        self.label = ctk.CTkLabel(self, text="Connexion à la base de données ELF", font=("Helvetica", 24, "bold"),text_color="#4A4947")
         self.label.pack(pady=40)
 
         # Identifiant
-        self.username_label = ctk.CTkLabel(self, text="Scanner votre carte ou entrer votre identifiant ENSAM: ", font=("Helvetica", 16))
+        self.username_label = ctk.CTkLabel(self, text="Scanner votre carte ou entrer votre identifiant ENSAM: ", font=("Helvetica", 16),text_color="#4A4947")
         self.username_label.pack(pady=10)
         self.username_entry = ctk.CTkEntry(self, width=300, font=("Helvetica", 16))
         self.username_entry.pack(pady=10)
@@ -35,7 +38,7 @@ class LoginPage(ctk.CTkFrame):
         self.register_button.pack(pady=10)
 
         # Message d'erreur
-        self.error_label = ctk.CTkLabel(self, text="", font=("Helvetica", 14), text_color="red")
+        self.error_label = ctk.CTkLabel(self, text="", font=("Helvetica", 14), text_color="maroon")
         self.error_label.pack(pady=10)
 
         self.username_entry.focus_set()
