@@ -6,6 +6,9 @@ class RegisterPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
+
+        # Couleur de fond principale
+        self.configure(fg_color="#F9F7F0")
         
         # Titre de la page
         self.label = ctk.CTkLabel(self, text="Inscription à la base de données ELF", font=("Helvetica", 24, "bold"))

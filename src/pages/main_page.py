@@ -9,12 +9,15 @@ class MainPage(ctk.CTkFrame):
 
         self.pack(fill="both", expand=True)
         
+        # Couleur de fond principale
+        self.configure(fg_color="#F9F7F0")
+
         # Ajout du bandeau supérieur
         self.bandeau = Band_sup(self, controller)
         self.bandeau.pack(fill="x", side="top")
         
         # Titre de la page principale
-        self.label = ctk.CTkLabel(self, text="Bienvenue dans la base de données ELF", font=("Helvetica", 24, "bold"))
+        self.label = ctk.CTkLabel(self, text="Bienvenue dans la base de données ELF", font=("Helvetica", 24, "bold"),text_color="#4A4947")
         self.label.pack(pady=40)
 
         # Bouton de déconnexion
