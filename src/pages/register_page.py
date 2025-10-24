@@ -11,29 +11,29 @@ class RegisterPage(ctk.CTkFrame):
         self.configure(fg_color="#F9F7F0")
         
         # Titre de la page
-        self.label = ctk.CTkLabel(self, text="Inscription à la base de données ELF", font=("Helvetica", 24, "bold"))
+        self.label = ctk.CTkLabel(self, text="Inscription à la base de données ELF", font=("Helvetica", 24, "bold"),text_color="#4A4947")
         self.label.pack(pady=40)
 
         # Identifiant
-        self.username_label = ctk.CTkLabel(self, text="Scanner votre carte ou entrer votre identifiant ENSAM: ", font=("Helvetica", 16))
+        self.username_label = ctk.CTkLabel(self, text="Scanner votre carte ou entrer votre identifiant ENSAM: ", font=("Helvetica", 16),text_color="#4A4947")
         self.username_label.pack(pady=10)
         self.username_entry = ctk.CTkEntry(self, width=300, font=("Helvetica", 16))
         self.username_entry.pack(pady=10)
 
         #Nom
-        self.name_label = ctk.CTkLabel(self, text="Nom : ", font=("Helvetica", 16))
+        self.name_label = ctk.CTkLabel(self, text="Nom : ", font=("Helvetica", 16),text_color="#4A4947")
         self.name_label.pack(pady=10)
         self.name_entry = ctk.CTkEntry(self, width=300, font=("Helvetica", 16))
         self.name_entry.pack(pady=10)
 
         #Prenom
-        self.firstname_label = ctk.CTkLabel(self, text="Prénom : ", font=("Helvetica", 16))
+        self.firstname_label = ctk.CTkLabel(self, text="Prénom : ", font=("Helvetica", 16),text_color="#4A4947")
         self.firstname_label.pack(pady=10)
         self.firstname_entry = ctk.CTkEntry(self, width=300, font=("Helvetica", 16))
         self.firstname_entry.pack(pady=10)
 
         #Mail
-        self.email_label = ctk.CTkLabel(self, text="Mail : ", font=("Helvetica", 16))
+        self.email_label = ctk.CTkLabel(self, text="Mail : ", font=("Helvetica", 16),text_color="#4A4947")
         self.email_label.pack(pady=10)
         self.email_entry = ctk.CTkEntry(self, width=300, font=("Helvetica", 16))
         self.email_entry.pack(pady=10)
@@ -44,7 +44,7 @@ class RegisterPage(ctk.CTkFrame):
         self.register_button.pack(pady=20)
 
         # Message d'erreur
-        self.error_label = ctk.CTkLabel(self, text="", font=("Helvetica", 14), text_color="red")
+        self.error_label = ctk.CTkLabel(self, text="", font=("Helvetica", 14), text_color="maroon")
         self.error_label.pack(pady=10)
 
         self.username_entry.focus_set()
