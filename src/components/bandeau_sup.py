@@ -19,7 +19,7 @@ class Band_sup(ctk.CTkFrame):
         self.refresh()
 
 
-        # 🟤 Style commun pour les boutons du bandeau
+        # Style commun pour les boutons du bandeau
         button_style = {
             "font": ("Helvetica", 16),
             "fg_color": "#B17457",
@@ -57,7 +57,7 @@ class Band_sup(ctk.CTkFrame):
         
         self.user = get_session()
 
-        # 🟤 Style du bouton utilisateur / connexion
+        # Style du bouton utilisateur / connexion
         button_style = {
             "font": ("Helvetica", 16, "bold"),
             "fg_color": "#B17457",
