@@ -90,7 +90,7 @@ import customtkinter as ctk
 #     app.mainloop()
 import customtkinter as ctk
 
-class ObjetFrame(ctk.CTkFrame):
+class ProductCard(ctk.CTkFrame):
     def __init__(self, master, nom, categorie, disponible=True, code="B164"):
         super().__init__(master, corner_radius=15, border_width=1)
         self.nom = nom
