@@ -18,7 +18,6 @@ class MainPage(ctk.CTkFrame):
         self.bandeau = Band_sup(self, controller)
         self.bandeau.pack(fill="x", side="top")
         
-<<<<<<< HEAD
         # Recherche (alignée en haut à droite)
         # Frame qui occupe la largeur en haut, puis un conteneur à droite
         self.search_frame = ctk.CTkFrame(self)
@@ -42,11 +41,6 @@ class MainPage(ctk.CTkFrame):
         for product in self.products:
             self.productCard = ProductCard(self, nom=product[4], categorie="test", disponible=True, code="123234")
             self.productCard.pack(padx=20, pady=10, fill="x")
-=======
-        # Titre de la page principale
-        self.label = ctk.CTkLabel(self, text="Bienvenue dans la base de données ELF", font=("Helvetica", 24, "bold"),text_color="#4A4947")
-        self.label.pack(pady=40)
->>>>>>> 4113c5475d0e50cd8d11fe44fdc1b7950ba691b8
 
         # Bouton de déconnexion
         self.logout_button = ctk.CTkButton(self, text="Se déconnecter", font=("Helvetica", 16), command=self.logout)
