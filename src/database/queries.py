@@ -1,9 +1,5 @@
 from database.connection import get_db
 
-def get_all_products():
-    cursor = get_db().cursor(dictionary=True)
-    cursor.execute("SELECT * FROM products")
-    return cursor.fetchall()
 
 def get_all_users():
     cursor = get_db().cursor(dictionary=True)
@@ -15,6 +11,11 @@ def get_user_by_id(user_id: str):
     query = "SELECT * FROM Personnel WHERE Personnel.id_personnel = '%s'" % str(user_id)
     cursor.execute(query)
     return cursor.fetchone()
+
+def get_all_products_with_category():
+    cursor = get_db().cursor()
+    cursor.execute("SELECT * FROM Materiel JOIN Matos ON Materiel.nom_materiel = Matos.nom_materiel")
+    return cursor.fetchall()
 
 def add_user(id_personnel, mail, type_personnel, nom, prenom):
     
