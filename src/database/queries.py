@@ -1,24 +1,79 @@
 from database.connection import get_db
+import mysql.connector
 
+def execute_query(query, params=None, fetch_one=False, fetch_all=False, is_commit=False, dictionary_cursor=False):
+    """
+    Exécute une requête de manière sécurisée avec gestion des curseurs.
+    """
+    connection = get_db()
+    if not connection or not connection.is_connected():
+        raise Exception("Database is not connected.")
+        
+    cursor = connection.cursor(dictionary=dictionary_cursor)
+    try:
+        cursor.execute(query, params)
+        
+        if is_commit:
+            connection.commit()
+            return cursor.lastrowid
+            
+        if fetch_one:
+            return cursor.fetchone()
+            
+        if fetch_all:
+            return cursor.fetchall()
+            
+    except mysql.connector.Error as err:
+        print(f"Erreur SQL : {err}")
+        if is_commit:
+            connection.rollback() # Annuler les changements en cas d'erreur
+        return None
+    finally:
+        cursor.close()
 
-def get_all_users():
-    cursor = get_db().cursor(dictionary=True)
-    cursor.execute("SELECT id_personnel, mail FROM Personnel")
-    return cursor.fetchall()
+def get_user_by_email(email: str):
+    query = "SELECT * FROM Personnel WHERE mail = %s"
+    params = (email,)
+    return execute_query(query, params, fetch_one=True, dictionary_cursor=True)
 
 def get_user_by_id(user_id: str):
-    cursor = get_db().cursor(dictionary=True)
-    query = "SELECT * FROM Personnel WHERE Personnel.id_personnel = '%s'" % str(user_id)
-    cursor.execute(query)
-    return cursor.fetchone()
+    query = "SELECT * FROM Personnel WHERE Personnel.id_personnel = %s"
+    params = (user_id,)
+    return execute_query(query, params, fetch_one=True, dictionary_cursor=True)
+
+def get_all_users():
+    query = "SELECT id_personnel, mail FROM Personnel"
+    return execute_query(query, fetch_all=True, dictionary_cursor=True)
 
 def get_all_products_with_category():
-    cursor = get_db().cursor()
-    cursor.execute("SELECT * FROM Materiel JOIN Matos ON Materiel.nom_materiel = Matos.nom_materiel")
-    return cursor.fetchall()
+    query = """
+        SELECT
+            m.id_materiel, m.derniere_localisation, m.nom_materiel, m.lieu_rangement, t.photo_materiel
+        FROM
+            Materiel m
+        JOIN
+            Matos t ON m.nom_materiel = t.nom_materiel
+    """
+    return execute_query(query, fetch_all=True, dictionary_cursor=True)
 
-def add_user(id_personnel, mail, type_personnel, nom, prenom):
-    
+
+def get_product_by_id(produit_id: int):
+    query = """
+        SELECT
+            m.id_materiel, m.date_garantie, m.date_dernier_entretient, m.derniere_localisation, m.nom_materiel, m.lieu_rangement, t.photo_materiel, t.frequence_entretient, t.notice_materiel
+        FROM 
+            Materiel m
+        JOIN
+            Matos t ON m.nom_materiel = t.nom_materiel
+        WHERE
+            m.id_materiel = %s
+    """
+    params = (produit_id,)
+    return execute_query(query, params, fetch_one=True, dictionary_cursor=True)
+
+
+
+def add_user(id_personnel, mail, type_personnel, nom, prenom):    
     # Verifier le format des données avant insertion
     if not isinstance(id_personnel, int):
         raise ValueError("id_personnel doit être un entier.")
@@ -31,10 +86,9 @@ def add_user(id_personnel, mail, type_personnel, nom, prenom):
     if not isinstance(prenom, str):
         raise ValueError("prenom doit être une chaîne de caractères.")
 
-    cursor = get_db().cursor()
-    query = "INSERT INTO Personnel (id_personnel, mail, type_personnel, nom, prenom) VALUES ('%s', '%s', '%s', '%s', '%s')" % (id_personnel, mail, type_personnel, nom, prenom)
-    cursor.execute(query)
-    get_db().commit()
+    query = "INSERT INTO Personnel (id_personnel, mail, type_personnel, nom, prenom) VALUES ('%s', '%s', '%s', '%s', '%s')"
+    params = (id_personnel, mail, type_personnel, nom, prenom)
+    
 
     
 def add_material(id_materiel, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel):
@@ -51,10 +105,9 @@ def add_material(id_materiel, date_garantie, date_dernier_entretient, derniere_l
     if not isinstance(nom_materiel, str):
         raise ValueError("nom_materiel doit être une chaîne de caractères.")
 
-    cursor = get_db().cursor()
-    query = "INSERT INTO Materiel (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel) VALUES ('%s', '%s', '%s', '%s', '%s')" % (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel)
-    cursor.execute(query)
-    get_db().commit()
+    query = "INSERT INTO Materiel (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel) VALUES ('%s', '%s', '%s', '%s', '%s')"
+    params = (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel)
+    return execute_query(query, params, is_commit=True)
 
     
 def add_matos(nom_materiel, photo_materiel, frequence_entretient, notice_materiel):
@@ -69,10 +122,9 @@ def add_matos(nom_materiel, photo_materiel, frequence_entretient, notice_materie
     if not isinstance(notice_materiel, str):
         raise ValueError("notice_materiel doit être une chaine de caractère.")
    
-    cursor = get_db().cursor()
-    query = "INSERT INTO Matos (nom_materiel, photo_materiel, frequence_entretient, nom_materiel) VALUES ('%s', '%s', '%s', '%s')" % (nom_materiel, photo_materiel, frequence_entretient, notice_materiel)
-    cursor.execute(query)
-    get_db().commit()
+    query = "INSERT INTO Matos (nom_materiel, photo_materiel, frequence_entretient, nom_materiel) VALUES ('%s', '%s', '%s', '%s')"
+    params = (nom_materiel, photo_materiel, frequence_entretient, notice_materiel)
+    return execute_query(query, params, is_commit=True)
  
     
 def add_loan(id_emprunt, motif, date_emprunt, id_materiel, id_personnel):
@@ -89,10 +141,9 @@ def add_loan(id_emprunt, motif, date_emprunt, id_materiel, id_personnel):
     if not isinstance(id_personnel, int):
         raise ValueError("id_personnel doit être un entier.")
 
-    cursor = get_db().cursor()
-    query = "INSERT INTO Emprunt (id_emprunt, motif, date_emprunt, id_materiel, id_personnel) VALUES ('%s', '%s', '%s','%s', '%s')" % (id_emprunt, motif, date_emprunt, id_materiel, id_personnel)
-    cursor.execute(query)
-    get_db().commit()
+    query = "INSERT INTO Emprunt (id_emprunt, motif, date_emprunt, id_materiel, id_personnel) VALUES ('%s', '%s', '%s','%s', '%s')"
+    params = (id_emprunt, motif, date_emprunt, id_materiel, id_personnel)
+    return execute_query(query, params, is_commit=True)
 
     
 def add_instructions(notice_materiel):
@@ -101,10 +152,9 @@ def add_instructions(notice_materiel):
     if not isinstance(notice_materiel, str):
         raise ValueError("notice_materiel doit être une chaine de caractère.")
 
-    cursor = get_db().cursor()
-    query = "INSERT INTO Notice (notice_materiel) VALUES ('%s')" % (notice_materiel)
-    cursor.execute(query)
-    get_db().commit()
+    query = "INSERT INTO Notice (notice_materiel) VALUES ('%s')"
+    params =  (notice_materiel,)
+    return execute_query(query, params, is_commit=True)
  
     
 def add_storage(id_materiel, lieu_rangement):

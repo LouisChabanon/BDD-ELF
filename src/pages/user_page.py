@@ -86,7 +86,8 @@ class UserPage(ctk.CTkFrame):
             command=lambda: controller.show_page("MainPage")
         )
         self.back_button.place(relx=0.95, rely=0.95, anchor="se")
-    def refresh(self):
+        
+    def refresh(self, args=None):
         """Actualise les informations de la page utilisateur"""
         session = get_session()
         if session:
