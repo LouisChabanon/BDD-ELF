@@ -59,7 +59,6 @@ class Band_sup(ctk.CTkFrame):
 
         if self.user:
             # Bouton "Nom Prénom" utilisateur
-            print(f"Bandeau supérieur : utilisateur actuel = {self.user}")
             self.user_button = ctk.CTkButton(
                 self,
                 text=f"{self.user['prenom']} {self.user['nom']}",

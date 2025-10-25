@@ -62,10 +62,10 @@ class ProductCard(ctk.CTkFrame):
         self.actions_frame = ctk.CTkFrame(self.left_frame, fg_color="transparent")
         self.actions_frame.grid(row=3, column=0, sticky="w", pady=(10, 10))
         
-        self.btn_fiche = ctk.CTkButton(self.actions_frame, text="Fiche produit", width=120, fg_color="white", text_color="black", command=self.open_product_page, border_width=1)
+        self.btn_fiche = ctk.CTkButton(self.actions_frame, text="Fiche produit", width=120, fg_color="white", text_color="black", command=self.open_product_page, border_width=2)
         self.btn_fiche.pack(side="left", padx=5)
         
-        self.btn_historique = ctk.CTkButton(self.actions_frame, text="Historique", width=120, fg_color="white", text_color="black", border_width=1)
+        self.btn_historique = ctk.CTkButton(self.actions_frame, text="Historique", width=120, fg_color="white", text_color="black", border_width=2, command=self.open_history_page)
         self.btn_historique.pack(side="left", padx=5)
         
         self.code_label = ctk.CTkLabel(self.actions_frame, text=self.code, font=("Arial", 13, "bold"))
@@ -86,5 +86,11 @@ class ProductCard(ctk.CTkFrame):
             self.controller.show_product_page(self.code)
         else:
             print("Erreur : Impossible d'ouvrir la page, ID manquant")
+
+    def open_history_page(self):
+        if self.code != 'N/A':
+            self.controller.show_product_history_page(self.code)
+        else:
+            print("Erreur : Impossible d'ouvrir la page, ID manquant") 
         
 

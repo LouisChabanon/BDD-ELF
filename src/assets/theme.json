@@ -12,6 +12,14 @@
     "top_fg_color": ["#F2EDE4", "#2E2E2E"],
     "border_color": ["#D8D2C2", "#B8B2A3"]
   },
+  "CTkScrollableFrame" :{
+    "corner_radius": 8,
+    "border_width": 0,
+    "fg_color": ["#F9F7F0", "#F9F7F0"],
+    "label_fg_color": ["#F9F7F0", "#F9F7F0"],
+    "top_fg_color": ["#F2EDE4", "#2E2E2E"],
+    "border_color": ["#D8D2C2", "#B8B2A3"]
+  },
   "CTkButton": {
     "corner_radius": 8,
     "border_width": 2,

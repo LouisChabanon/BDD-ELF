@@ -4,6 +4,7 @@ from pages.main_page import MainPage
 from pages.register_page import RegisterPage
 from pages.product_page import ProductPage
 from pages.user_page import UserPage
+from pages.product_history_page import ProductHistoryPage
 
 class AppController(ctk.CTk):
     def __init__(self):
@@ -27,6 +28,7 @@ class AppController(ctk.CTk):
         self.pages["RegisterPage"] = RegisterPage(self.container, self)
         self.pages["ProductPage"] = ProductPage(self.container, self)
         self.pages["UserPage"] = UserPage(self.container, self)
+        self.pages["ProductHistoryPage"] = ProductHistoryPage(self.container, self)
 
         for page in self.pages.values():
             page.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -58,3 +60,14 @@ class AppController(ctk.CTk):
             print(f"Erreur : La page 'ProductPage' n'existe pas.")
         except Exception as e:
             print(f"Erreur lors de l'affichage de la page produit : {e}")
+
+
+    def show_product_history_page(self, product_id: str):
+        try:
+            page = self.pages["ProductHistoryPage"]
+            page.set_product_id(product_id)
+            self.show_page("ProductHistoryPage")
+        except KeyError:
+            print(f"Erreur : La page 'ProductHistoryPage' n'existe pas.")
+        except Exception as e:
+            print(f"Erreur lors de l'affichage de la page historique : {e}")

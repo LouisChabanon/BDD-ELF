@@ -49,6 +49,7 @@ try:
     # Probleme avec emprunt : ne correspond pas à l'architecture: ne peux pas emprunter n produits
     # Ajout id_historique parce que plus simple
     # Ajout Date fin réservation
+    # Ajout motif à historique
     table_queries = [
 		"""
 		CREATE TABLE Personnel(
@@ -104,6 +105,7 @@ try:
 		CREATE TABLE Historique(
           id_historique INT PRIMARY KEY AUTO_INCREMENT,
           date_rendu TEXT,
+          motif TEXT,
           id_materiel INT,
           id_personnel INT,
           FOREIGN KEY (id_personnel) REFERENCES Personnel(id_personnel),

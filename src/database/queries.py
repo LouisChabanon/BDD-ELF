@@ -72,6 +72,56 @@ def get_product_by_id(produit_id: int):
     return execute_query(query, params, fetch_one=True, dictionary_cursor=True)
 
 
+def get_product_history(product_id: int):
+    query = """
+    SELECT
+        h.date_rendu, h.motif, p.nom, p.prenom, m.id_materiel, t.nom_materiel 
+    FROM
+        Historique h 
+    JOIN
+        Personnel p ON h.id_personnel = p.id_personnel
+    JOIN
+        Materiel m ON h.id_materiel = m.id_materiel
+    JOIN
+        Matos t ON m.nom_materiel = t.nom_materiel 
+    WHERE h.id_materiel = %s
+    ORDER BY
+        h.date_rendu DESC
+    """
+    params = (product_id,)
+    return execute_query(query, params, fetch_all=True, dictionary_cursor=True)
+
+
+def update_username(id_personnel: int, new_id: int):
+    if not isinstance(new_id, int):
+        raise ValueError("new_id doit être un entier")
+    if not isinstance(id_personnel, int):
+        raise ValueError("id_personnel doit être un entier")
+    
+    if get_user_by_id(new_id):
+        print("Erreur : un utilisateur ayant cet identifiant existe déjà")
+        return
+    else:
+        query = "UPDATE Personnel SET Personnel.id_personnel = %s WHERE Personnel.id_personnel = %s"
+        params = (new_id, id_personnel)
+        return execute_query(query, params, is_commit=True)
+    
+def update_email(id_personnel: int, new_mail: str):
+    if not isinstance(new_mail, str):
+        raise ValueError("new_id doit être un entier")
+    if not isinstance(id_personnel, int):
+        raise ValueError("id_personnel doit être un entier")
+    
+    if get_user_by_email(new_mail):
+        print("Erreur : un utilisateur ayant cet email existe déjà")
+        return
+    else:
+        query = "UPDATE Personnel SET Personnel.mail = %s WHERE Personnel.id_personnel = %s"
+        params = (new_mail, id_personnel)
+        return execute_query(query, params, is_commit=True)
+
+
+
 
 def add_user(id_personnel, mail, type_personnel, nom, prenom):    
     # Verifier le format des données avant insertion
@@ -88,6 +138,7 @@ def add_user(id_personnel, mail, type_personnel, nom, prenom):
 
     query = "INSERT INTO Personnel (id_personnel, mail, type_personnel, nom, prenom) VALUES ('%s', '%s', '%s', '%s', '%s')"
     params = (id_personnel, mail, type_personnel, nom, prenom)
+    return execute_query(query, params, is_commit=True)
     
 
     
