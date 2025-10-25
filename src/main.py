@@ -3,7 +3,7 @@ from app_controller import AppController
 from database.connection import init_db
 
 if __name__ == "__main__":
-    ctk.set_appearance_mode("System")
+    ctk.set_appearance_mode("light")
     ctk.set_default_color_theme("src/assets/theme.json")
     
     try:

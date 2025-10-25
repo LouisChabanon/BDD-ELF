@@ -1,14 +1,14 @@
 {
   "CTk": {
-    "fg_color": ["#F9F7F0", "#1C1C1C"]
+    "fg_color": ["#F9F7F0", "#F9F7F0"]
   },
   "CTkToplevel": {
-    "fg_color": ["#F9F7F0", "#1C1C1C"]
+    "fg_color": ["#F9F7F0", "#F9F7F0"]
   },
   "CTkFrame": {
     "corner_radius": 8,
     "border_width": 0,
-    "fg_color": ["#F9F7F0", "#262626"],
+    "fg_color": ["#F9F7F0", "#F9F7F0"],
     "top_fg_color": ["#F2EDE4", "#2E2E2E"],
     "border_color": ["#D8D2C2", "#B8B2A3"]
   },
@@ -134,18 +134,18 @@
   },
   "CTkFont": {
     "macOS": {
-      "family": "Roboto",
-      "size": 13,
+      "family": "Helvetica",
+      "size": 16,
       "weight": "normal"
     },
     "Windows": {
-      "family": "Roboto",
-      "size": 13,
+      "family": "Helvetica",
+      "size": 16,
       "weight": "normal"
     },
     "Linux": {
-      "family": "Roboto",
-      "size": 13,
+      "family": "Helvetica",
+      "size": 16,
       "weight": "normal"
     }
   }

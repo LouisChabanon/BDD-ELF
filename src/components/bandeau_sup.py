@@ -19,25 +19,13 @@ class Band_sup(ctk.CTkFrame):
         self.refresh()
 
 
-        # Style commun pour les boutons du bandeau
-        button_style = {
-            "font": ("Helvetica", 16),
-            "fg_color": "#B17457",
-            "text_color": "#F9F7F0",
-            "border_color": "#D8D2C2",
-            "border_width": 2,
-            "hover_color": "#9C6049",
-            "corner_radius": 8,
-            "height": 35,
-            "width": 150
-        }
+
 
         # Bouton "Ajouter objet"
         self.add_button = ctk.CTkButton(
             self, 
             text="Ajouter objet", 
             command=self.add_page,
-            **button_style
         )
         self.add_button.grid(row=0, column=1, sticky="e", padx=10, pady=10)
 
@@ -46,11 +34,10 @@ class Band_sup(ctk.CTkFrame):
             self, 
             text="Rendre", 
             command=self.return_page,
-            **button_style
         )
         self.return_button.grid(row=0, column=2, sticky="e", padx=20, pady=10)
 
-    def refresh(self):
+    def refresh(self, args=None):
         """Met à jour le bouton utilisateur ou connexion."""
         if hasattr(self, 'user_button') and self.user_button:
             self.user_button.destroy()
