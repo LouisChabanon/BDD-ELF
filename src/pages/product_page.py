@@ -1,20 +1,17 @@
 import customtkinter as ctk
-import sqlite3
 import os
 import webbrowser
 from components.bandeau_sup import Band_sup
+from database.queries import get_product_by_id
+from utils.session import get_session
 
 
 class ProductPage(ctk.CTkFrame):
-    def __init__(self, parent, controller, produit_id=None):
+    def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        self.produit_id = produit_id
-        self.produit = None
-
-        # Charger les infos du produit depuis la base
-        if produit_id is not None:
-            self.produit = self.get_produit_from_db(produit_id)
+        self.product_id = None
+        self.product = None
 
         # Couleur de fond principale
         self.configure(fg_color="#F9F7F0")
@@ -41,10 +38,10 @@ class ProductPage(ctk.CTkFrame):
         self.info_frame = ctk.CTkFrame(self.main_frame)
         self.info_frame.pack(side="left", fill="both", expand=True, padx=40, pady=20)
 
-        nom = self.produit.get("nom", "Nom du matériel") if self.produit else "Nom du matériel"
-        type_ = self.produit.get("type", "Type inconnu") if self.produit else "Type inconnu"
-        freq = self.produit.get("frequence_entretien", "Non spécifiée") if self.produit else "Non spécifiée"
-        dernier = self.produit.get("dernier_entretien", "Inconnu") if self.produit else "Inconnu"
+        nom = "Nom du matériel"
+        type_ = "Type inconnu"
+        freq = "Non spécifiée"
+        dernier = "Inconnu"
 
         self.nom_label = ctk.CTkLabel(self.info_frame, text=nom, font=("Helvetica", 22, "bold"))
         self.nom_label.pack(pady=(0, 10), anchor="w")
@@ -88,36 +85,48 @@ class ProductPage(ctk.CTkFrame):
         self.retour_button.pack(side="right", padx=20)
 
 
+
+    def refresh(self):
+        """Actualise le bandeau et charge les données du produit."""
+        # Vérifier la session
+        if get_session() is None:
+            self.controller.show_page("LoginPage")
+            return
+            
+        self.bandeau.refresh()
+        
+        # Charger les données du produit si l'ID est défini
+        if self.product_id:
+            print(f"Chargement des données pour le produit ID: {self.product_id}")
+            self.product_data = get_product_by_id(self.product_id)
+            
+            if self.product_data:
+                self.nom_label.configure(text=self.product_data.get("nom_materiel", "Nom inconnu"))
+                # Note: "Type" n'est pas dans la BDD, on utilise nom_materiel
+                self.type_label.configure(text=f"Type : {self.product_data.get('nom_materiel', 'N/A')}")
+                self.freq_label.configure(text=f"Fréquence d’entretien : {self.product_data.get('frequence_entretient', 'N/A')}")
+                self.dernier_label.configure(text=f"Dernier entretien : {self.product_data.get('date_dernier_entretient', 'N/A')}")
+                #self.loc_label.configure(text=f"Localisation : {self.product_data.get('lieu_rangement', 'N/A')}")
+            else:
+                print(f"Erreur: Impossible de trouver le produit avec l'ID {self.product_id}")
+                self.nom_label.configure(text="Erreur : Produit non trouvé")
+                self.type_label.configure(text="Type : N/A")
+                self.freq_label.configure(text="Fréquence d’entretien : N/A")
+                self.dernier_label.configure(text="Dernier entretien : N/A")
+                #self.loc_label.configure(text="Localisation : N/A")
+        else:
+            self.nom_label.configure(text="Aucun produit sélectionné")
+
+    def set_product_id(self, product_id: int):
+        self.product_id = product_id
+        self.product_data = None
+
+
     # --- Méthode pour aller à la page de modification ---
     def goto_modifier_page(self):
         self.controller.show_page("ModifierProduitPage")
 
 
-    # --- Récupérer les infos du matériel depuis la BDD ---
-    def get_produit_from_db(self, produit_id):
-        try:
-            conn = sqlite3.connect("database.db")
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT nom, type, frequence_entretien, dernier_entretien, pdf_path 
-                FROM materiels WHERE id = ?
-            """, (produit_id,))
-            row = cursor.fetchone()
-            conn.close()
-
-            if row:
-                return {
-                    "nom": row[0],
-                    "type": row[1],
-                    "frequence_entretien": row[2],
-                    "dernier_entretien": row[3],
-                    "pdf_path": row[4]
-                }
-            else:
-                return {}
-        except Exception as e:
-            print("Erreur SQL :", e)
-            return {}
 
 
     # --- Ouvrir le PDF associé ---

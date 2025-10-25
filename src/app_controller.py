@@ -34,10 +34,27 @@ class AppController(ctk.CTk):
         
 
     def show_page(self, page_name):
-        page = self.pages[page_name]
+        try:
+            page = self.pages[page_name]
 
-        if hasattr(page, 'refresh'):
-            page.refresh()
+            if hasattr(page, 'refresh'):
+                print(f"Actualisation de la page : {page_name}")
+                page.refresh()
 
-        print(f"Affichage de la page : {page_name}")
-        page.tkraise()
+            print(f"Affichage de la page : {page_name}")
+            page.tkraise()
+        except KeyError:
+            print(f"Erreur : La page {page_name} n'existe pas")
+        except Exception as e:
+            print(f"Erreur lors de l'affichage de la page produit : {e}")
+
+
+    def show_product_page(self, product_id: str):
+        try:
+            page = self.pages["ProductPage"]
+            page.set_product_id(product_id)
+            self.show_page("ProductPage")
+        except KeyError:
+            print(f"Erreur : La page 'ProductPage' n'existe pas.")
+        except Exception as e:
+            print(f"Erreur lors de l'affichage de la page produit : {e}")
