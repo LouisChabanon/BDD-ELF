@@ -21,7 +21,7 @@ class ProductPage(ctk.CTkFrame):
         self.bandeau.pack(fill="x", side="top")
 
         # Contenu principal
-        self.main_frame = ctk.CTkFrame(self)
+        self.main_frame = ctk.CTkFrame(self,fg_color="#F9F7F0")
         self.main_frame.pack(fill="both", expand=True, padx=40, pady=(20, 80))
 
         # --- Section photos ---
