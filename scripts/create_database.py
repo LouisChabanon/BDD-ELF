@@ -146,9 +146,11 @@ try:
         # 1. Personnel
         query_personnel = "INSERT INTO Personnel (id_personnel, mail, type_personnel, nom, prenom) VALUES (%s, %s, %s, %s, %s)"
         data_personnel = [
-            (12345, 'test.user@ensam.eu', 'doctorant', 'User', 'Test'),
-            (1001, 'admin.elf@ensam.eu', 'admin', 'Admin', 'Super'),
-            (2001, 'jean.dupont@ensam.eu', 'etudiant', 'Dupont', 'Jean')
+           (164, 'chloe.duffau@ensam.eu', 'doctorant', 'Duffau', 'Chloe'),
+           (94165, 'zoe.hautreux@ensam.eu', 'doctorant', 'Hautreux', 'Zoé'), 
+           (16852, 'adrien.ungemuth@ensam.eu', 'doctorant', 'Ungemuth', 'Adrien'), 
+           (24, 'louis.chabanon@ensam.eu', 'doctorant', 'Chabanon', 'Louis'),
+             (35, 'rayen.nouri@ensam.eu', 'doctorant', 'Nouri', 'Rayen')
         ]
         db_cursor.executemany(query_personnel, data_personnel)
         print(f"  -> {len(data_personnel)} utilisateurs ajoutés.")
@@ -165,10 +167,16 @@ try:
 
         # 3. Matos (Modèles de matériel)
         query_matos = "INSERT INTO Matos (nom_materiel, photo_materiel, frequence_entretient, notice_materiel) VALUES (%s, %s, %s, %s)"
-        data_matos = [
-            ('Oscilloscope T-1000', 'src/assets/images/oscillo.png', 'Tous les 6 mois', 'src/assets/notices/oscillo_t1000.pdf'),
-            ('Multimetre DMM-300', 'src/assets/images/multimetre.png', 'Tous les 12 mois', 'src/assets/notices/dmm_300.pdf'),
-            ('Alimentation Labo PS-50', 'src/assets/images/alim.png', 'N/A', 'src/assets/notices/ps_50.pdf')
+        data_matos = [('mascarpone', 'photo_mascarpone',1, 'notice_mascarpone' ) 
+            ,('boudoirs', 'photo_boudoirs' ,2,  'notice_boudoirs')
+            ,('café', 'photo_café' , 1, 'notice_café')
+            ,( 'chocolat' , 'photo_chocolat' , 1 , 'notice_chocolat' )
+            ,( 'sucre', 'photo_sucre', 2, 'notice_sucre')
+            ,( 'œufs', 'photo_oeufs', 1 , 'notice_oeufs' )
+            ,( 'poireaux' , 'photo_poireaux', 3, 'notice_poireaux')
+            ,( 'patate' , 'photo_patate', 6, 'notice_patate')
+            ,('sel' , 'photo_sel', 6, 'notice_sel' )
+            , ('carotte' , 'photo_carotte', 1, 'notice_carotte')       
         ]
         db_cursor.executemany(query_matos, data_matos)
         print(f"  -> {len(data_matos)} modèles (Matos) ajoutés.")
