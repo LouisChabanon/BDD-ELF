@@ -1,8 +1,9 @@
 import customtkinter as ctk
 from utils.session import get_cart, add_to_cart
+from database.queries import get_product_history
 
 class ProductCard(ctk.CTkFrame):
-    def __init__(self, parent, controller, product: dict, disponible=True):
+    def __init__(self, parent, controller, product: dict):
         super().__init__(parent)
         self.controller = controller
         
@@ -10,7 +11,7 @@ class ProductCard(ctk.CTkFrame):
         self.nom = product.get("nom_materiel", "N/A")
         self.categorie = product.get("nom_materiel", "N/A")
         self.code = product.get("id_materiel", "N/A")
-        self.disponible = disponible
+        self.disponible = self.is_available()
         
         # Configuration de la grille principale
         self.grid_columnconfigure(1, weight=1)
@@ -44,9 +45,8 @@ class ProductCard(ctk.CTkFrame):
             text_color="black",
             corner_radius=20,
             width=100,
-            state=("normal" if self.disponible else "disabled")
+            state="disabled"
         )
-        self.status_dispo.pack(side="left", padx=(0, 10))
         
         self.status_indispo = ctk.CTkButton(
             self.status_frame,
@@ -55,9 +55,10 @@ class ProductCard(ctk.CTkFrame):
             text_color="black",
             corner_radius=20,
             width=100,
-            state=("disabled" if self.disponible else "normal")
+            state="disabled"
         )
-        self.status_indispo.pack(side="left")
+
+        self.update_status(self.disponible)
         
         # Fiche produit / Historique / Code
         self.actions_frame = ctk.CTkFrame(self.left_frame, fg_color="transparent")
@@ -101,3 +102,21 @@ class ProductCard(ctk.CTkFrame):
             add_to_cart(self.product_data)
             self.controller.show_page("MainPage")
 
+    def is_available(self):
+        product_id = self.product_data["id_materiel"]
+        product_history =  get_product_history(product_id)
+        
+        if(product_history == []):
+            print(f"No product history for {product_id}")
+            return True
+
+
+    def update_status(self, is_available):
+
+        self.status_dispo.pack_forget()
+        self.status_indispo.pack_forget()
+
+        if is_available:
+            self.status_dispo.pack(side="left")
+        else:
+            self.status_dispo.pack(side="left")
