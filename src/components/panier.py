@@ -1,13 +1,13 @@
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import ttk
-from utils.session import get_cart
+from utils.session import get_cart, remove_from_cart
 
 class PanierFrame(ctk.CTkFrame):
     """Panneau latéral droit pour le panier."""
-    def __init__(self, parent):
+    def __init__(self, parent, controller):
         super().__init__(parent, fg_color="white", corner_radius=10)
-        
+        self.controller = controller
         self.pack_propagate(False)
 
         # Titre
@@ -66,10 +66,24 @@ class PanierFrame(ctk.CTkFrame):
             # Utiliser .get() est plus sûr pour les dictionnaires
             nom_text = item.get('nom_materiel', 'Nom inconnu')
             loc_text = item.get('lieu_rangement', 'Lieu inconnu')
+
+            item_container = ctk.CTkFrame(self.scrollable_frame, fg_color="transparent")
             
+            ctk.CTkButton(
+                item_container,
+                text="X",
+                command=lambda i=item: self.delete_from_cart(i),
+                width=28,
+                height=28,
+                anchor="l"
+            ).pack(side="right", anchor="center", padx=(10, 5))
+
+            text_container = ctk.CTkFrame(item_container, fg_color="transparent")
+            text_container.pack(side="left", fill="x", expand=True, padx=10)
+
             # Label Nom
             ctk.CTkLabel(
-                self.scrollable_frame, 
+                text_container, 
                 text=nom_text, 
                 font=("Helvetica", 14, "bold"),
                 anchor="w"
@@ -77,14 +91,20 @@ class PanierFrame(ctk.CTkFrame):
 
             # Label Emplacement
             ctk.CTkLabel(
-                self.scrollable_frame, 
+                text_container, 
                 text=loc_text, 
                 font=("Helvetica", 12), 
                 text_color="gray50",
                 anchor="w"
             ).pack(fill="x", padx=10, pady=(0, 5))
 
+            item_container.pack(fill="x", pady=5)
+
             # Ajouter un séparateur (sauf après le dernier item)
             if i < total_items - 1:
                 separator = ctk.CTkFrame(self.scrollable_frame, height=1, fg_color="#E0E0E0")
                 separator.pack(fill="x", padx=10, pady=5)
+        
+    def delete_from_cart(self, product):
+        remove_from_cart(product)
+        self.refresh()

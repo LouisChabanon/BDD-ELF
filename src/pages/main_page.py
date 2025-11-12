@@ -26,7 +26,7 @@ class MainPage(ctk.CTkFrame):
         self.left_frame.pack(side="left", fill="both", expand=True, padx=(20, 10), pady=10)
 
         # Partie droite : panier
-        self.panier = PanierFrame(self.main_container)
+        self.panier = PanierFrame(self.main_container, self.controller)
         self.panier.pack(side="right", fill="y", padx=(0, 20), pady=10)
         self.panier.configure(width=400)  # Environ 1/3 de la page
 
