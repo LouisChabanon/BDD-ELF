@@ -1,11 +1,7 @@
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import ttk
-from components.bandeau_sup import Band_sup
-from components.product_card import ProductCard
-from utils.session import get_session
-from database.queries import get_all_products_with_category
-
+from utils.session import get_cart
 
 class PanierFrame(ctk.CTkFrame):
     """Panneau latéral droit pour le panier."""
@@ -14,14 +10,22 @@ class PanierFrame(ctk.CTkFrame):
         
         self.pack_propagate(False)
 
+        # Titre
         title = ctk.CTkLabel(self, text="🛒 Panier", font=("Helvetica", 20, "bold"))
         title.pack(pady=(15, 10))
 
-        # Conteneur scrollable pour les objets du panier
+        # --- CORRECTION LAYOUT ---
+        # 1. Packer le bouton du bas D'ABORD
+        # Il réserve sa place en bas.
+        self.validate_btn = ctk.CTkButton(self, text="Valider mes emprunts")
+        self.validate_btn.pack(side="bottom", pady=20, padx=20)
+
+        # --- Mise en place du Scroll (Canvas) ---
         self.canvas = tk.Canvas(self, bg="white", highlightthickness=0)
         self.scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = ctk.CTkFrame(self.canvas, fg_color="white")
 
+        # Redimensionnement dynamique de la zone de scroll
         self.scrollable_frame.bind(
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
@@ -30,19 +34,57 @@ class PanierFrame(ctk.CTkFrame):
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
-        self.canvas.pack(side="left", fill="both", expand=True, padx=10)
+        # 2. Packer la scrollbar et le canvas EN DERNIER
+        # Le canvas prendra tout l'espace restant.
         self.scrollbar.pack(side="right", fill="y")
+        self.canvas.pack(side="left", fill="both", expand=True, padx=10)
 
-        # Exemple d’objets dans le panier
-        for i in range(3):
-            item = ctk.CTkFrame(self.scrollable_frame, fg_color="#F6F6F6", corner_radius=8)
-            item.pack(fill="x", padx=5, pady=8)
+        # Chargement initial des données
+        self.refresh()
 
-            ctk.CTkLabel(item, text="Catégorie", font=("Helvetica", 12)).pack(anchor="w", padx=10, pady=(5, 0))
-            ctk.CTkLabel(item, text="Nom objet", font=("Helvetica", 14, "bold")).pack(anchor="w", padx=10)
-            ctk.CTkButton(item, text="Fiche produit", width=100, fg_color="#E1E1E1", text_color="black").pack(anchor="w", padx=10, pady=(5, 5))
-            ctk.CTkLabel(item, text="B164", font=("Helvetica", 13)).pack(anchor="w", padx=10)
 
-        # Bouton final
-        validate_btn = ctk.CTkButton(self, text="Valider mes emprunts", fg_color="#222222", hover_color="#333333")
-        validate_btn.pack(side="bottom", pady=20, padx=20)
+    def refresh(self):
+        """Met à jour l'affichage du panier en fonction du contenu actuel."""
+        
+        # 1. Nettoyer l'affichage existant
+        for widget in self.scrollable_frame.winfo_children():
+            widget.destroy()
+
+        # 2. Récupérer les données à jour
+        cart_products = get_cart()
+
+        # 3. Si le panier est vide, afficher un message
+        if not cart_products:
+            empty_label = ctk.CTkLabel(self.scrollable_frame, text="Votre panier est vide.", text_color="gray")
+            empty_label.pack(pady=20, padx=10)
+            return
+
+        # 4. Générer la liste simple
+        total_items = len(cart_products)
+        for i, item in enumerate(cart_products):
+            
+            # Utiliser .get() est plus sûr pour les dictionnaires
+            nom_text = item.get('nom_materiel', 'Nom inconnu')
+            loc_text = item.get('lieu_rangement', 'Lieu inconnu')
+            
+            # Label Nom
+            ctk.CTkLabel(
+                self.scrollable_frame, 
+                text=nom_text, 
+                font=("Helvetica", 14, "bold"),
+                anchor="w"
+            ).pack(fill="x", padx=10, pady=(5, 0))
+
+            # Label Emplacement
+            ctk.CTkLabel(
+                self.scrollable_frame, 
+                text=loc_text, 
+                font=("Helvetica", 12), 
+                text_color="gray50",
+                anchor="w"
+            ).pack(fill="x", padx=10, pady=(0, 5))
+
+            # Ajouter un séparateur (sauf après le dernier item)
+            if i < total_items - 1:
+                separator = ctk.CTkFrame(self.scrollable_frame, height=1, fg_color="#E0E0E0")
+                separator.pack(fill="x", padx=10, pady=5)

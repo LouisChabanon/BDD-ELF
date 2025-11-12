@@ -184,10 +184,10 @@ try:
         # 4. Materiel (Instances spécifiques)
         query_materiel = "INSERT INTO Materiel (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel, lieu_rangement) VALUES (%s, %s, %s, %s, %s, %s)"
         data_materiel = [
-            (100001, '2025-01-01', '2025-07-01', 'Labo Principal', 'Oscilloscope T-1000', 'Armoire A, Etagere 1'),
-            (100002, '2025-01-01', '2025-07-01', 'Labo Principal', 'Oscilloscope T-1000', 'Armoire A, Etagere 1'),
-            (200001, '2024-06-01', '2025-06-01', 'Labo Principal', 'Multimetre DMM-300', 'Salle B, Rack 2'),
-            (300001, '2023-01-01', 'N/A', 'Labo Principal', 'Alimentation Labo PS-50', 'Salle B, Rack 2')
+            (100001, '2025-01-01', '2025-07-01', 'Labo Principal', 'boudoirs', 'Armoire A, Etagere 1'),
+            (100002, '2025-01-01', '2025-07-01', 'Labo Principal', 'boudoirs', 'Armoire A, Etagere 1'),
+            (200001, '2024-06-01', '2025-06-01', 'Labo Principal', 'chocolat', 'Salle B, Rack 2'),
+            (300001, '2023-01-01', 'N/A', 'Labo Principal', 'poireaux', 'Salle B, Rack 2')
         ]
         db_cursor.executemany(query_materiel, data_materiel)
         print(f"  -> {len(data_materiel)} instances (Materiel) ajoutées.")
@@ -210,7 +210,7 @@ try:
         # 7. Reservation
         query_res = "INSERT INTO Reservation (date_reservation, date_fin_reservation, id_personnel, id_materiel) VALUES (%s, %s, %s, %s)"
         data_res = [
-            ('2025-10-26', '2025-10-27', 2001, 100001) # Jean Dupont réserve l'Oscillo 1
+            ('2025-10-26', '2025-10-27', 24, 100001) 
         ]
         db_cursor.executemany(query_res, data_res)
         print(f"  -> {len(data_res)} réservations ajoutées.")
@@ -218,7 +218,7 @@ try:
         # 8. Emprunt
         query_emp = "INSERT INTO Emprunt (motif, date_emprunt, id_materiel, id_personnel) VALUES (%s, %s, %s, %s)"
         data_emp = [
-            ('TP Electronique', '2025-10-20', 100002, 12345) # Test User a emprunté l'Oscillo 2
+            ('TP Electronique', '2025-10-20', 100002, 24) 
         ]
         db_cursor.executemany(query_emp, data_emp)
         print(f"  -> {len(data_emp)} emprunts ajoutés.")

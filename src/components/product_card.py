@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from utils.session import get_cart, add_to_cart
 
 class ProductCard(ctk.CTkFrame):
     def __init__(self, parent, controller, product: dict, disponible=True):
@@ -75,7 +76,7 @@ class ProductCard(ctk.CTkFrame):
         self.right_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.right_frame.grid(row=0, column=2, rowspan=4, padx=20, pady=15)
         
-        self.btn_emprunter = ctk.CTkButton(self.right_frame, text="Emprunter", width=120)
+        self.btn_emprunter = ctk.CTkButton(self.right_frame, text="Emprunter", width=120, command=self.add_product_to_cart)
         self.btn_emprunter.pack(pady=(0, 15))
         
         self.btn_reserver = ctk.CTkButton(self.right_frame, text="Réserver", width=120)
@@ -91,6 +92,12 @@ class ProductCard(ctk.CTkFrame):
         if self.code != 'N/A':
             self.controller.show_product_history_page(self.code)
         else:
-            print("Erreur : Impossible d'ouvrir la page, ID manquant") 
-        
+            print("Erreur : Impossible d'ouvrir la page, ID manquant")
+
+    def add_product_to_cart(self):
+        print(f"Adding {self.product_data} to cart", )
+        items_in_panier = get_cart()
+        if self.product_data not in items_in_panier:
+            add_to_cart(self.product_data)
+            self.controller.show_page("MainPage")
 
