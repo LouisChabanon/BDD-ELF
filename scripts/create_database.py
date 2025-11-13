@@ -66,6 +66,7 @@ try:
           photo_materiel TEXT,
           frequence_entretient TEXT,
           notice_materiel TEXT
+          FOREIGN KEY (notice_materiel) RFERENCES Notice(notice_materiel)
             )
         """,
         """
@@ -102,17 +103,6 @@ try:
             )
 		""",
         """
-		CREATE TABLE Historique(
-          id_historique INT PRIMARY KEY AUTO_INCREMENT,
-          date_rendu TEXT,
-          motif TEXT,
-          id_exemplaire INT,
-          id_personnel INT,
-          FOREIGN KEY (id_personnel) REFERENCES Personnel(id_personnel),
-          FOREIGN KEY (id_exemplaire) REFERENCES Exemplaire(id_exemplaire)
-            )
-		""",
-        """
 		CREATE TABLE Reservation(
           id_reservation INT PRIMARY KEY AUTO_INCREMENT,
           date_reservation TEXT,
@@ -131,7 +121,12 @@ try:
           FOREIGN KEY (nom_kit) REFERENCES Kit(nom_kit),
           FOREIGN KEY (nom_materiel) REFERENCES Materiel(nom_materiel)
         )
-		"""
+		""",
+        """
+        CREATE TABLE Notice(
+        notice_materiel VARCHAR(100) PRIMARY KEY,
+        )
+        """
     ]
     
     print("Implémentation des tables...")
