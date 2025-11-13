@@ -39,6 +39,23 @@ class PanierFrame(ctk.CTkFrame):
         self.scrollbar.pack(side="right", fill="y")
         self.canvas.pack(side="left", fill="both", expand=True, padx=10)
 
+        # --- Scroll à la molette / trackpad ---
+        def _on_mousewheel(event):
+            # Windows / macOS
+            self.canvas.yview_scroll(-int(event.delta / 120), "units")
+
+        def _on_linux_scroll(event):
+            # Linux : bouton 4 = haut, bouton 5 = bas
+            if event.num == 4:
+                self.canvas.yview_scroll(-1, "units")
+            elif event.num == 5:
+                self.canvas.yview_scroll(1, "units")
+
+        # Lier les événements de scroll au canvas
+        self.canvas.bind_all("<MouseWheel>", _on_mousewheel)      # Windows / macOS
+        self.canvas.bind_all("<Button-4>", _on_linux_scroll)       # Linux scroll up
+        self.canvas.bind_all("<Button-5>", _on_linux_scroll)       # Linux scroll down
+
         # Chargement initial des données
         self.refresh()
 

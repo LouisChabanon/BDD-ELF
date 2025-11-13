@@ -68,6 +68,23 @@ class MainPage(ctk.CTkFrame):
             product_card = ProductCard(self._inner_frame, controller=self.controller, product=product)
             product_card.pack(padx=20, pady=10, fill="x")
 
+        # --- Scroll à la molette / trackpad ---
+        def _on_mousewheel(event):
+            # Windows / MacOS : delta positif/négatif selon le sens
+            self._canvas.yview_scroll(-int(event.delta / 120), "units")
+
+        def _on_linux_scroll(event):
+            # Linux : bouton 4 = haut, bouton 5 = bas
+            if event.num == 4:
+                self._canvas.yview_scroll(-1, "units")
+            elif event.num == 5:
+                self._canvas.yview_scroll(1, "units")
+
+        # Lier les événements de scroll au canvas
+        self._canvas.bind_all("<MouseWheel>", _on_mousewheel)      # Windows / macOS
+        self._canvas.bind_all("<Button-4>", _on_linux_scroll)       # Linux scroll up
+        self._canvas.bind_all("<Button-5>", _on_linux_scroll)       # Linux scroll down
+
         self.refresh()
 
     def refresh(self, args=None):
