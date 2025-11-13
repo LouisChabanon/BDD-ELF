@@ -277,3 +277,40 @@ def add_reservation(date_reservation, id_personnel, id_materiel):
     query = "INSERT INTO Reservation (date_reservation, id_personnel, id_materiel) VALUES ('%s', '%s', '%s'')" % (date_reservation, id_personnel, id_materiel)
     cursor.execute(query)
     get_db().commit()
+
+def update_product(product_id: int, data: dict):
+    """
+    Met à jour les informations d'un produit dans les tables Materiel et Matos.
+    data peut contenir :
+        - nom_materiel
+        - frequence_entretient
+        - date_dernier_entretient
+        - notice_materiel (PDF)
+    """
+
+    if not isinstance(product_id, int):
+        raise ValueError("product_id doit être un entier.")
+
+    # Récupérer les valeurs
+    nom_materiel = data.get("nom_materiel")
+    frequence_entretient = data.get("frequence_entretient")
+    date_dernier_entretient = data.get("date_dernier_entretient")
+    notice_materiel = data.get("pdf_path")  # correspond au champ PDF
+
+    # --- Mise à jour table Materiel ---
+    query_materiel = """
+        UPDATE Materiel
+        SET date_dernier_entretient = %s, nom_materiel = %s
+        WHERE id_materiel = %s
+    """
+    params_materiel = (date_dernier_entretient, nom_materiel, product_id)
+    execute_query(query_materiel, params_materiel, is_commit=True)
+
+    # --- Mise à jour table Matos ---
+    query_matos = """
+        UPDATE Matos
+        SET frequence_entretient = %s, notice_materiel = %s
+        WHERE nom_materiel = %s
+    """
+    params_matos = (frequence_entretient, notice_materiel, nom_materiel)
+    execute_query(query_matos, params_matos, is_commit=True)

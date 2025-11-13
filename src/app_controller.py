@@ -5,6 +5,7 @@ from pages.register_page import RegisterPage
 from pages.product_page import ProductPage
 from pages.user_page import UserPage
 from pages.product_history_page import ProductHistoryPage
+from pages.modif_product_page import ModifierProduitPage
 
 class AppController(ctk.CTk):
     def __init__(self):
@@ -29,6 +30,7 @@ class AppController(ctk.CTk):
         self.pages["ProductPage"] = ProductPage(self.container, self)
         self.pages["UserPage"] = UserPage(self.container, self)
         self.pages["ProductHistoryPage"] = ProductHistoryPage(self.container, self)
+        self.pages["ModifierProduitPage"] = ModifierProduitPage(self.container, self)
 
         for page in self.pages.values():
             page.place(relx=0, rely=0, relwidth=1, relheight=1)
