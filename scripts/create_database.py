@@ -127,9 +127,9 @@ try:
 		CREATE TABLE Kit_Materiel(
           id_kit_materiel INT PRIMARY KEY AUTO_INCREMENT,
           nom_kit VARCHAR(100),
-          id_materiel INT,
+          nom_materiel VARCHAR(100),
           FOREIGN KEY (nom_kit) REFERENCES Kit(nom_kit),
-          FOREIGN KEY (id_materiel) REFERENCES Materiel(id_materiel)
+          FOREIGN KEY (nom_materiel) REFERENCES Matos(nom_materiel)
         )
 		"""
     ]
@@ -158,7 +158,7 @@ try:
         # 2. Rangement
         query_rangement = "INSERT INTO Rangement (lieu_rangement) VALUES (%s)"
         data_rangement = [
-            ('placard'), ('frigo'), ('garage')
+            ('placard',), ('frigo',), ('garage',)
         ]
         db_cursor.executemany(query_rangement, data_rangement)
         print(f"  -> {len(data_rangement)} lieux de rangement ajoutés.")
@@ -202,7 +202,7 @@ try:
 
         # 5. Kit
         query_kit = "INSERT INTO Kit (nom_kit) VALUES (%s)"
-        data_kit = [('tiramisu'), ('mousse_au_chocolat'), ('soupe')]
+        data_kit = [('tiramisu',), ('mousse_au_chocolat',), ('soupe',)]
         db_cursor.executemany(query_kit, data_kit)
         print(f"  -> {len(data_kit)} kits ajoutés.")
 
@@ -227,7 +227,7 @@ try:
         # 7. Reservation
         query_res = "INSERT INTO Reservation (date_reservation, date_fin_reservation, id_personnel, id_materiel) VALUES (%s, %s, %s, %s)"
         data_res = [
-            ('2025-10-26', '2025-10-27', 24, 100001) 
+            ('01_12_2025', '07_12_2025', 164, 10001) 
         ]
         db_cursor.executemany(query_res, data_res)
         print(f"  -> {len(data_res)} réservations ajoutées.")
@@ -235,7 +235,7 @@ try:
         # 8. Emprunt
         query_emp = "INSERT INTO Emprunt (motif, date_emprunt, id_materiel, id_personnel) VALUES (%s, %s, %s, %s)"
         data_emp = [
-            ('TP Electronique', '2025-10-20', 100002, 24) 
+            ("J'invite des amis", '05_12_2025', 10002, 94165) 
         ]
         db_cursor.executemany(query_emp, data_emp)
         print(f"  -> {len(data_emp)} emprunts ajoutés.")
