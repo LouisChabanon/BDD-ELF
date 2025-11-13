@@ -314,3 +314,11 @@ def update_product(product_id: int, data: dict):
     """
     params_matos = (frequence_entretient, notice_materiel, nom_materiel)
     execute_query(query_matos, params_matos, is_commit=True)
+    
+def delete_emprunt(id_materiel, id_personnel):
+    query = """
+            DELETE FROM Emprunt
+            WHERE id_materiel = %s AND id_personnel = %s
+            """
+    params = (id_materiel, id_personnel)
+    execute_query(query, params, is_commit=True)
