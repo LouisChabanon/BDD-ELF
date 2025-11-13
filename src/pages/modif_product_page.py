@@ -3,7 +3,6 @@ from tkinter import filedialog, messagebox
 from components.bandeau_sup import Band_sup
 from database.queries import get_product_by_id, update_product
 from utils.session import get_session
-import os
 
 
 class ModifierProduitPage(ctk.CTkFrame):
@@ -33,7 +32,7 @@ class ModifierProduitPage(ctk.CTkFrame):
         self.title_label.pack(pady=(0, 20))
 
         # --- Zone du formulaire ---
-        self.form_frame = ctk.CTkFrame(self.main_frame, fg_color="#FFFFFF", corner_radius=15)
+        self.form_frame = ctk.CTkFrame(self.main_frame, fg_color="#F9F7F0", corner_radius=15,border_color="#E0DED5")
         self.form_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
         # Nom du matériel

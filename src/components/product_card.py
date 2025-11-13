@@ -67,12 +67,6 @@ class ProductCard(ctk.CTkFrame):
         self.btn_fiche = ctk.CTkButton(self.actions_frame, text="Fiche produit", width=120, fg_color="white", text_color="black", command=self.open_product_page, border_width=2)
         self.btn_fiche.pack(side="left", padx=5)
         
-        self.btn_historique = ctk.CTkButton(self.actions_frame, text="Historique", width=120, fg_color="white", text_color="black", border_width=2, command=self.open_history_page)
-        self.btn_historique.pack(side="left", padx=5)
-        
-        self.code_label = ctk.CTkLabel(self.actions_frame, text=self.code, font=("Arial", 13, "bold"))
-        self.code_label.pack(side="left", padx=10)
-        
         # Boutons à droite : Emprunter / Réserver
         self.right_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.right_frame.grid(row=0, column=2, rowspan=4, padx=20, pady=15)
