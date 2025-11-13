@@ -158,9 +158,7 @@ try:
         # 2. Rangement
         query_rangement = "INSERT INTO Rangement (lieu_rangement) VALUES (%s)"
         data_rangement = [
-            ('Armoire A, Etagere 1',),
-            ('Salle B, Rack 2',),
-            ('Reserve Labo',)
+            ('placard'), ('frigo'), ('garage')
         ]
         db_cursor.executemany(query_rangement, data_rangement)
         print(f"  -> {len(data_rangement)} lieux de rangement ajoutés.")
@@ -184,25 +182,44 @@ try:
         # 4. Materiel (Instances spécifiques)
         query_materiel = "INSERT INTO Materiel (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel, lieu_rangement) VALUES (%s, %s, %s, %s, %s, %s)"
         data_materiel = [
-            (100001, '2025-01-01', '2025-07-01', 'Labo Principal', 'Oscilloscope T-1000', 'Armoire A, Etagere 1'),
-            (100002, '2025-01-01', '2025-07-01', 'Labo Principal', 'Oscilloscope T-1000', 'Armoire A, Etagere 1'),
-            (200001, '2024-06-01', '2025-06-01', 'Labo Principal', 'Multimetre DMM-300', 'Salle B, Rack 2'),
-            (300001, '2023-01-01', 'N/A', 'Labo Principal', 'Alimentation Labo PS-50', 'Salle B, Rack 2')
+            (10001, '01_01_2026', '01_09_2025', 'garage', 'mascarpone', 'frigo'), 
+            (10002, '01_01_2026', '01_09_2025', 'garage', 'boudoirs', 'garage'),
+            (10003, '01_01_2026', '01_09_2025', 'garage', 'boudoirs', 'garage'),
+            (10004, '01_01_2026', '01_09_2025', 'garage', 'boudoirs', 'garage'),
+            (10005, '01_01_2026', '01_09_2025', 'garage', 'café', 'frigo'),
+            (10006, '01_01_2026', '01_09_2025', 'garage', 'café', 'frigo'),
+            (10007, '01_01_2026', '01_09_2025', 'garage', 'chocolat', 'placard'),
+            (10008, '01_01_2026', '01_09_2025', 'garage', 'sucre', 'placard'),
+            (10009, '01_01_2026', '01_09_2025', 'garage', 'oeufs', 'frigo'),
+            (10010, '01_01_2026', '01_09_2025', 'garage', 'oeufs', 'frigo'),
+            (10011, '01_01_2026' , '01_09_2025' , 'garage', 'oeufs', 'frigo'),
+            (10012, '01_01_2026', '01_09_2025', 'garage', 'oeufs', 'frigo'),
+            (10013, '01_01_2026', '01_09_2025', 'garage', 'oeufs', 'frigo'),
+            (10014, '01_01_2026' , '01_09_2025' , 'garage', 'oeufs', 'frigo')
         ]
         db_cursor.executemany(query_materiel, data_materiel)
         print(f"  -> {len(data_materiel)} instances (Materiel) ajoutées.")
 
         # 5. Kit
         query_kit = "INSERT INTO Kit (nom_kit) VALUES (%s)"
-        data_kit = [('Kit Electronique Base',)]
+        data_kit = [('tiramisu'), ('mousse_au_chocolat'), ('soupe')]
         db_cursor.executemany(query_kit, data_kit)
         print(f"  -> {len(data_kit)} kits ajoutés.")
 
         # 6. Kit_Materiel (Lien)
-        query_kit_mat = "INSERT INTO Kit_Materiel (nom_kit, id_materiel) VALUES (%s, %s)"
+        query_kit_mat = "INSERT INTO Kit_Materiel (nom_kit, nom_materiel) VALUES (%s, %s)"
         data_kit_mat = [
-            ('Kit Electronique Base', 200001), # Multimetre
-            ('Kit Electronique Base', 300001)  # Alimentation
+            ('tiramisu', 'mascarpone'),
+            ('tiramisu', 'oeufs'),
+            ('tiramisu', 'sucre'),
+            ('tiramisu', 'cafe'),
+            ('tiramisu', 'boudoirs'),
+            ('mousse_au_chocolat','oeufs'),
+            ('mousse_au_chocolat', 'chocolat'),
+            ('soupe' , 'poireaux'),
+            ('soupe' , 'patate'),
+            ('soupe' , 'sel' ),
+            ('soupe' , 'carotte')
         ]
         db_cursor.executemany(query_kit_mat, data_kit_mat)
         print(f"  -> {len(data_kit_mat)} liens kit-materiel ajoutés.")
