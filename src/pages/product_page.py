@@ -152,3 +152,4 @@ class ProductPage(ctk.CTkFrame):
         if not os.path.exists(pdf_path):
             messagebox.showerror("Erreur", f"Le fichier PDF n’existe pas :\n{pdf_path}")
             return
+
