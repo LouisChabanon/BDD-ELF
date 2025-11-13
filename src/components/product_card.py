@@ -10,7 +10,7 @@ class ProductCard(ctk.CTkFrame):
         self.product_data = product
         self.nom = product.get("nom_materiel", "N/A")
         self.categorie = product.get("nom_materiel", "N/A")
-        self.code = product.get("id_materiel", "N/A")
+        self.code = product.get("id_exemplaire", "N/A")
         self.disponible = self.is_available()
         
         # Configuration de la grille principale
@@ -103,7 +103,7 @@ class ProductCard(ctk.CTkFrame):
             self.controller.show_page("MainPage")
 
     def is_available(self):
-        product_id = self.product_data["id_materiel"]
+        product_id = self.product_data["id_exemplaire"]
         product_history =  get_product_history(product_id)
         
         if(product_history == []):

@@ -61,7 +61,7 @@ try:
             )
 		""",
         """
-		CREATE TABLE Matos(
+		CREATE TABLE Materiel(
           nom_materiel VARCHAR(100) PRIMARY KEY,
           photo_materiel TEXT,
           frequence_entretient TEXT,
@@ -79,14 +79,14 @@ try:
             )
 		""",
         """
-		CREATE TABLE Materiel(
-          id_materiel INT PRIMARY KEY,
+		CREATE TABLE Exemplaire(
+          id_exemplaire INT PRIMARY KEY,
           date_garantie TEXT,
           date_dernier_entretient TEXT,
           derniere_localisation TEXT,
           nom_materiel VARCHAR(100),
           lieu_rangement VARCHAR(100),
-          FOREIGN KEY (nom_materiel) REFERENCES Matos(nom_materiel),
+          FOREIGN KEY (nom_materiel) REFERENCES Materiel(nom_materiel),
           FOREIGN KEY (lieu_rangement) REFERENCES Rangement(lieu_rangement)
             )
 		""",
@@ -96,9 +96,9 @@ try:
           motif TEXT,
           date_emprunt TEXT,
           id_personnel INT,
-          id_materiel INT,
+          id_exemplaire INT,
           FOREIGN KEY (id_personnel) REFERENCES Personnel(id_personnel),
-          FOREIGN KEY (id_materiel) REFERENCES Materiel(id_materiel)
+          FOREIGN KEY (id_exemplaire) REFERENCES Exemplaire(id_exemplaire)
             )
 		""",
         """
@@ -106,10 +106,10 @@ try:
           id_historique INT PRIMARY KEY AUTO_INCREMENT,
           date_rendu TEXT,
           motif TEXT,
-          id_materiel INT,
+          id_exemplaire INT,
           id_personnel INT,
           FOREIGN KEY (id_personnel) REFERENCES Personnel(id_personnel),
-          FOREIGN KEY (id_materiel) REFERENCES Materiel(id_materiel)
+          FOREIGN KEY (id_exemplaire) REFERENCES Exemplaire(id_exemplaire)
             )
 		""",
         """
@@ -118,9 +118,9 @@ try:
           date_reservation TEXT,
           date_fin_reservation TEXT,
           id_personnel INT,
-          id_materiel INT,
+          id_exemplaire INT,
           FOREIGN KEY (id_personnel) REFERENCES Personnel(id_personnel),
-          FOREIGN KEY (id_materiel) REFERENCES Materiel(id_materiel)
+          FOREIGN KEY (id_exemplaire) REFERENCES Exemplaire(id_exemplaire)
             )
 		""",
         """
@@ -129,7 +129,7 @@ try:
           nom_kit VARCHAR(100),
           nom_materiel VARCHAR(100),
           FOREIGN KEY (nom_kit) REFERENCES Kit(nom_kit),
-          FOREIGN KEY (nom_materiel) REFERENCES Matos(nom_materiel)
+          FOREIGN KEY (nom_materiel) REFERENCES Materiel(nom_materiel)
         )
 		"""
     ]
@@ -163,9 +163,9 @@ try:
         db_cursor.executemany(query_rangement, data_rangement)
         print(f"  -> {len(data_rangement)} lieux de rangement ajoutés.")
 
-        # 3. Matos (Modèles de matériel)
-        query_matos = "INSERT INTO Matos (nom_materiel, photo_materiel, frequence_entretient, notice_materiel) VALUES (%s, %s, %s, %s)"
-        data_matos = [('mascarpone', 'photo_mascarpone',1, 'notice_mascarpone' ) 
+        # 3. Materiel (Modèles de matériel)
+        query_materiel = "INSERT INTO Materiel (nom_materiel, photo_materiel, frequence_entretient, notice_materiel) VALUES (%s, %s, %s, %s)"
+        data_materiel = [('mascarpone', 'photo_mascarpone',1, 'notice_mascarpone' ) 
             ,('boudoirs', 'photo_boudoirs' ,2,  'notice_boudoirs')
             ,('café', 'photo_café' , 1, 'notice_café')
             ,( 'chocolat' , 'photo_chocolat' , 1 , 'notice_chocolat' )
@@ -176,12 +176,12 @@ try:
             ,('sel' , 'photo_sel', 6, 'notice_sel' )
             , ('carotte' , 'photo_carotte', 1, 'notice_carotte')       
         ]
-        db_cursor.executemany(query_matos, data_matos)
-        print(f"  -> {len(data_matos)} modèles (Matos) ajoutés.")
+        db_cursor.executemany(query_materiel, data_materiel)
+        print(f"  -> {len(data_materiel)} modèles (Materiel) ajoutés.")
         
-        # 4. Materiel (Instances spécifiques)
-        query_materiel = "INSERT INTO Materiel (id_materiel, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel, lieu_rangement) VALUES (%s, %s, %s, %s, %s, %s)"
-        data_materiel = [
+        # 4. Exemplaire (Instances spécifiques)
+        query_exemplaire = "INSERT INTO Exemplaire (id_exemplaire, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel, lieu_rangement) VALUES (%s, %s, %s, %s, %s, %s)"
+        data_exemplaire = [
             (10001, '01_01_2026', '01_09_2025', 'garage', 'mascarpone', 'frigo'), 
             (10002, '01_01_2026', '01_09_2025', 'garage', 'boudoirs', 'garage'),
             (10003, '01_01_2026', '01_09_2025', 'garage', 'boudoirs', 'garage'),
@@ -197,8 +197,8 @@ try:
             (10013, '01_01_2026', '01_09_2025', 'garage', 'oeufs', 'frigo'),
             (10014, '01_01_2026' , '01_09_2025' , 'garage', 'oeufs', 'frigo')
         ]
-        db_cursor.executemany(query_materiel, data_materiel)
-        print(f"  -> {len(data_materiel)} instances (Materiel) ajoutées.")
+        db_cursor.executemany(query_exemplaire, data_exemplaire)
+        print(f"  -> {len(data_exemplaire)} instances (Exemplaire) ajoutées.")
 
         # 5. Kit
         query_kit = "INSERT INTO Kit (nom_kit) VALUES (%s)"
@@ -222,10 +222,10 @@ try:
             ('soupe' , 'carotte')
         ]
         db_cursor.executemany(query_kit_mat, data_kit_mat)
-        print(f"  -> {len(data_kit_mat)} liens kit-materiel ajoutés.")
+        print(f"  -> {len(data_kit_mat)} liens kit-Exemplaire ajoutés.")
 
         # 7. Reservation
-        query_res = "INSERT INTO Reservation (date_reservation, date_fin_reservation, id_personnel, id_materiel) VALUES (%s, %s, %s, %s)"
+        query_res = "INSERT INTO Reservation (date_reservation, date_fin_reservation, id_personnel, id_exemplaire) VALUES (%s, %s, %s, %s)"
         data_res = [
             ('01_12_2025', '07_12_2025', 164, 10001) 
         ]
@@ -233,7 +233,7 @@ try:
         print(f"  -> {len(data_res)} réservations ajoutées.")
 
         # 8. Emprunt
-        query_emp = "INSERT INTO Emprunt (motif, date_emprunt, id_materiel, id_personnel) VALUES (%s, %s, %s, %s)"
+        query_emp = "INSERT INTO Emprunt (motif, date_emprunt, id_exemplaire, id_personnel) VALUES (%s, %s, %s, %s)"
         data_emp = [
             ("J'invite des amis", '05_12_2025', 10002, 94165) 
         ]
