@@ -4,6 +4,7 @@ import webbrowser
 from components.bandeau_sup import Band_sup
 from database.queries import get_product_by_id
 from utils.session import get_session
+from tkinter import messagebox
 
 
 class ProductPage(ctk.CTkFrame):
@@ -129,16 +130,25 @@ class ProductPage(ctk.CTkFrame):
 
 
 
-    # --- Ouvrir le PDF associé ---
     def open_pdf(self):
-        if not self.produit or not self.produit.get("pdf_path"):
-            print("Aucun fichier PDF associé.")
+    # Ouvre le PDF de la fiche produit (en ligne ou local) #
+        if not self.product_data:
+            messagebox.showwarning("Avertissement", "Aucun produit sélectionné.")
             return
 
-        pdf_path = self.produit["pdf_path"]
+        pdf_path = self.product_data.get("pdf_path")
 
+        if not pdf_path:
+            messagebox.showwarning("Avertissement", "Aucun fichier PDF associé à ce produit.")
+            return
+
+    # Vérifie si c’est une URL (Google Drive, OneDrive, etc.)
+        if pdf_path.startswith("http://") or pdf_path.startswith("https://"):
+            webbrowser.open_new(pdf_path)
+            return
+
+    # Sinon, c’est un fichier local
+        import os
         if not os.path.exists(pdf_path):
-            print("Le fichier PDF n’existe pas :", pdf_path)
+            messagebox.showerror("Erreur", f"Le fichier PDF n’existe pas :\n{pdf_path}")
             return
-
-        webbrowser.open_new(pdf_path)

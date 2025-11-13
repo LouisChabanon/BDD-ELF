@@ -227,7 +227,7 @@ try:
         # 7. Reservation
         query_res = "INSERT INTO Reservation (date_reservation, date_fin_reservation, id_personnel, id_materiel) VALUES (%s, %s, %s, %s)"
         data_res = [
-            ('2025-10-26', '2025-10-27', 2001, 100001) # Jean Dupont réserve l'Oscillo 1
+            ('2025-10-26', '2025-10-27', 24, 100001) 
         ]
         db_cursor.executemany(query_res, data_res)
         print(f"  -> {len(data_res)} réservations ajoutées.")
@@ -235,7 +235,7 @@ try:
         # 8. Emprunt
         query_emp = "INSERT INTO Emprunt (motif, date_emprunt, id_materiel, id_personnel) VALUES (%s, %s, %s, %s)"
         data_emp = [
-            ('TP Electronique', '2025-10-20', 100002, 12345) # Test User a emprunté l'Oscillo 2
+            ('TP Electronique', '2025-10-20', 100002, 24) 
         ]
         db_cursor.executemany(query_emp, data_emp)
         print(f"  -> {len(data_emp)} emprunts ajoutés.")
