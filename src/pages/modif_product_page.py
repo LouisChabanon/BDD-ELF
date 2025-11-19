@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 from components.bandeau_sup import Band_sup
-from database.queries import get_product_by_id, update_product
+from database.queries import get_product_by_name, update_materiel
 from utils.session import get_session
 
 
@@ -9,7 +9,7 @@ class ModifierProduitPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        self.product_id = None
+        self.product_name = None
         self.product_data = None
 
         # --- Fond principal ---
@@ -105,8 +105,8 @@ class ModifierProduitPage(ctk.CTkFrame):
 
         self.bandeau.refresh()
 
-        if self.product_id:
-            self.product_data = get_product_by_id(self.product_id)
+        if self.product_name:
+            self.product_data = get_product_by_name(self.product_name)
             if self.product_data:
                 self.nom_entry.delete(0, "end")
                 self.nom_entry.insert(0, self.product_data.get("nom_materiel", ""))
@@ -124,18 +124,17 @@ class ModifierProduitPage(ctk.CTkFrame):
             messagebox.showwarning("Attention", "Aucun produit sélectionné.")
 
     # --- Définit quel produit est en cours d’édition ---
-    def set_product_id(self, product_id: int):
-        self.product_id = product_id
+    def set_product_name(self, product_name: str):
+        self.product_name = product_name
         self.product_data = None
 
     # --- Enregistre les changements dans la BDD ---
     def save_changes(self):
-        if not self.product_id:
+        if not self.product_name:
             messagebox.showerror("Erreur", "Aucun produit sélectionné.")
             return
 
         new_data = {
-            "nom_materiel": self.nom_entry.get().strip(),
             "frequence_entretient": self.freq_entry.get().strip(),
             "date_dernier_entretient": self.date_entry.get().strip(),
             "pdf_path": self.pdf_path_var.get().strip()
@@ -147,7 +146,7 @@ class ModifierProduitPage(ctk.CTkFrame):
             return
 
         try:
-            update_product(self.product_id, new_data)
+            update_materiel(self.product_name, new_data)
             messagebox.showinfo("Succès", "Les modifications ont été enregistrées avec succès.")
             self.controller.show_page("ProductPage")
         except Exception as e:

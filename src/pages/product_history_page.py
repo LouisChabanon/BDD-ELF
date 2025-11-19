@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from components.bandeau_sup import Band_sup
 from utils.session import get_session
-from database.queries import get_product_history, get_product_by_id
+from database.queries import get_exemplaire_history, get_exemplaires_by_product_id
 
 class ProductHistoryPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -70,7 +70,7 @@ class ProductHistoryPage(ctk.CTkFrame):
             return
 
         # 5. Récupérer les données du produit (pour le nom)
-        product_data = get_product_by_id(self.product_id)
+        product_data = get_exemplaires_by_product_id(self.product_id)
         if not product_data:
             self.title_label.configure(text=f"Erreur : Produit ID {self.product_id} non trouvé")
             return
@@ -79,7 +79,7 @@ class ProductHistoryPage(ctk.CTkFrame):
         self.title_label.configure(text=f"Historique pour : {self.product_name} (ID: {self.product_id})")
         
         # 6. Récupérer l'historique
-        history_list = get_product_history(self.product_id)
+        history_list = get_exemplaire_history(self.product_id)
         print(history_list)
         
         # 7. Afficher l'historique ou un message

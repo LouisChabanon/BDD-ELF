@@ -57,7 +57,20 @@ def get_all_products_with_category():
     return execute_query(query, fetch_all=True, dictionary_cursor=True)
 
 
-def get_product_by_id(produit_id: int):
+def get_product_by_name(nom_produit: int):
+    query = """
+        SELECT
+            m.nom_materiel, m.photo_materiel, m.frequence_entretient, m.notice_materiel
+        FROM
+            Materiel m
+        WHERE
+            m.nom_materiel = %s
+    """
+    params = (nom_produit,)
+    return execute_query(query, params, fetch_all=True, dictionary_cursor=True)
+
+
+def get_exemplaires_by_product_id(produit_id: int):
     query = """
         SELECT
             m.id_exemplaire, m.date_garantie, m.date_dernier_entretient, m.derniere_localisation, m.nom_materiel, m.lieu_rangement, t.photo_materiel, t.frequence_entretient, t.notice_materiel
@@ -72,23 +85,21 @@ def get_product_by_id(produit_id: int):
     return execute_query(query, params, fetch_one=True, dictionary_cursor=True)
 
 
-def get_product_history(product_id: int):
+def get_exemplaire_history(id: int):
     query = """
     SELECT
-        h.date_rendu, h.motif, p.nom, p.prenom, m.id_exemplaire, t.nom_materiel 
+        e.id_emprunt, e.motif, e.date_emprunt, e.date_rendu
     FROM
-        Historique h 
+        Emprunt e
     JOIN
-        Personnel p ON h.id_personnel = p.id_personnel
+        Personnel p ON e.#id_personnel = p.id_personnel
     JOIN
-        Exemplaire m ON h.id_exemplaire = m.id_exemplaire
-    JOIN
-        Materiel t ON m.nom_materiel = t.nom_materiel 
-    WHERE h.id_exemplaire = %s
+        Materiel t ON m.#nom_materiel = t.nom_materiel 
+    WHERE e.id_exemplaire = %s
     ORDER BY
-        h.date_rendu DESC
+        e.date_rendu DESC
     """
-    params = (product_id,)
+    params = (id,)
     return execute_query(query, params, fetch_all=True, dictionary_cursor=True)
 
 
@@ -278,42 +289,34 @@ def add_reservation(date_reservation, id_personnel, id_exemplaire):
     cursor.execute(query)
     get_db().commit()
 
-def update_product(product_id: int, data: dict):
+def update_materiel(product_name: str, data: dict):
     """
     Met à jour les informations d'un produit dans les tables Materiel et Matos.
     data peut contenir :
-        - nom_materiel
         - frequence_entretient
         - date_dernier_entretient
         - notice_materiel (PDF)
     """
 
-    if not isinstance(product_id, int):
-        raise ValueError("product_id doit être un entier.")
+    if not isinstance(product_name, str):
+        raise ValueError("product_name doit être une chaine de caractére.")
 
     # Récupérer les valeurs
-    nom_materiel = data.get("nom_materiel")
     frequence_entretient = data.get("frequence_entretient")
     date_dernier_entretient = data.get("date_dernier_entretient")
     notice_materiel = data.get("pdf_path")  # correspond au champ PDF
+    photo_materiel = data.get("photo_materiel")
 
     # --- Mise à jour table Materiel ---
     query_materiel = """
         UPDATE Materiel
-        SET date_dernier_entretient = %s, nom_materiel = %s
-        WHERE id_materiel = %s
-    """
-    params_materiel = (date_dernier_entretient, nom_materiel, product_id)
-    execute_query(query_materiel, params_materiel, is_commit=True)
-
-    # --- Mise à jour table Matos ---
-    query_matos = """
-        UPDATE Matos
-        SET frequence_entretient = %s, notice_materiel = %s
+        SET date_dernier_entretient = %s, notice_materiel = %s, photo_materiel = %s
         WHERE nom_materiel = %s
     """
-    params_matos = (frequence_entretient, notice_materiel, nom_materiel)
-    execute_query(query_matos, params_matos, is_commit=True)
+    params_materiel = (date_dernier_entretient, notice_materiel, photo_materiel, product_name)
+    execute_query(query_materiel, params_materiel, is_commit=True)
+
+
     
 def delete_emprunt(id_materiel, id_personnel):
     query = """

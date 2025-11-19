@@ -2,7 +2,7 @@ import customtkinter as ctk
 import webbrowser
 from tkinter import messagebox
 from components.bandeau_sup import Band_sup
-from database.queries import get_product_by_id, get_exemplaires_by_product_id
+from database.queries import get_product_by_name, get_exemplaires_by_product_id
 from utils.session import get_session
 
 
@@ -10,7 +10,7 @@ class ProductPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        self.product_id = None
+        self.product_name = None
         self.product_data = None
         self.exemplaires = []
 
@@ -103,9 +103,9 @@ class ProductPage(ctk.CTkFrame):
 
         self.bandeau.refresh()
 
-        if self.product_id:
-            self.product_data = get_product_by_id(self.product_id)
-            self.exemplaires = get_exemplaires_by_product_id(self.product_id)
+        if self.product_name:
+            self.product_data = get_product_by_name(self.product_name)
+            self.exemplaires = get_exemplaires_by_product_id(self.product_name)
 
             if self.product_data:
                 self.nom_label.configure(text=self.product_data.get("nom_materiel", "Nom inconnu"))

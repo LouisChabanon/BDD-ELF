@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from utils.session import get_cart, add_to_cart
-from database.queries import get_product_history
+from database.queries import get_exemplaire_history
 
 class ProductCard(ctk.CTkFrame):
     def __init__(self, parent, controller, product: dict):
@@ -98,7 +98,7 @@ class ProductCard(ctk.CTkFrame):
 
     def is_available(self):
         product_id = self.product_data["id_exemplaire"]
-        product_history =  get_product_history(product_id)
+        product_history =  get_exemplaire_history(product_id)
         
         if(product_history == []):
             print(f"No product history for {product_id}")
