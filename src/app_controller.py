@@ -13,10 +13,7 @@ class AppController(ctk.CTk):
         self.title("Base de données ELF")
         self.geometry("1280x720")
         
-        # Dictionnaire pour stocker les pages
         self.pages = {}
-
-        # Conteneur pour empiler les pages
         self.container = ctk.CTkFrame(self)
         self.container.pack(fill="both", expand=True)
 
@@ -34,42 +31,36 @@ class AppController(ctk.CTk):
 
         for page in self.pages.values():
             page.place(relx=0, rely=0, relwidth=1, relheight=1)
-        
-        
 
     def show_page(self, page_name):
         try:
             page = self.pages[page_name]
-
             if hasattr(page, 'refresh'):
-                print(f"Actualisation de la page : {page_name}")
                 page.refresh()
-
-            print(f"Affichage de la page : {page_name}")
             page.tkraise()
         except KeyError:
             print(f"Erreur : La page {page_name} n'existe pas")
-        except Exception as e:
-            print(f"Erreur lors de l'affichage de la page produit : {e}")
 
-
-    def show_product_page(self, product_id: str):
-        try:
-            page = self.pages["ProductPage"]
-            page.set_product_id(product_id)
-            self.show_page("ProductPage")
-        except KeyError:
-            print(f"Erreur : La page 'ProductPage' n'existe pas.")
-        except Exception as e:
-            print(f"Erreur lors de l'affichage de la page produit : {e}")
-
+    # Helper to show product page by ID (Spontaneous scan from other pages)
+    def show_product_page(self, product_id_or_name):
+        page = self.pages["ProductPage"]
+        
+        # Determine if it is an ID (int/digits) or a Name (string)
+        if str(product_id_or_name).isdigit():
+            # It's an ID, logic handles finding the name
+            # However, ProductPage logic relies on set_product_name mostly now.
+            # We should look up the name here or in the page.
+            from database.queries import get_product_name_by_exemplaire_id
+            name = get_product_name_by_exemplaire_id(product_id_or_name)
+            if name:
+                page.set_product_name(name)
+        else:
+            # It's a Name
+            page.set_product_name(product_id_or_name)
+            
+        self.show_page("ProductPage")
 
     def show_product_history_page(self, product_id: str):
-        try:
-            page = self.pages["ProductHistoryPage"]
-            page.set_product_id(product_id)
-            self.show_page("ProductHistoryPage")
-        except KeyError:
-            print(f"Erreur : La page 'ProductHistoryPage' n'existe pas.")
-        except Exception as e:
-            print(f"Erreur lors de l'affichage de la page historique : {e}")
+        page = self.pages["ProductHistoryPage"]
+        page.set_product_id(product_id)
+        self.show_page("ProductHistoryPage")

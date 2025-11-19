@@ -1,6 +1,4 @@
-
 _current_user = None
-
 _current_cart = []
 
 def set_session(user):
@@ -20,8 +18,11 @@ def clear_session():
 
 def add_to_cart(product):
     global _current_cart
-    _current_cart.append(product)
-    print(f"Added {_current_cart[-1]} to cart")
+    if not any(p['id_exemplaire'] == product['id_exemplaire'] for p in _current_cart):
+        _current_cart.append(product)
+        print(f"Added {product.get('nom_materiel')} to cart")
+    else:
+        print("Item already in cart")
 
 def get_cart():
     global _current_cart
@@ -29,9 +30,7 @@ def get_cart():
 
 def remove_from_cart(product):
     global _current_cart
-    for i in range(len(_current_cart)):
-        if _current_cart[i] == product:
-            _current_cart.pop(i)
-            return
-    print(f"Product not in panier")
-    
+    if product in _current_cart:
+        _current_cart.remove(product)
+    else:
+        print("Product not in panier")

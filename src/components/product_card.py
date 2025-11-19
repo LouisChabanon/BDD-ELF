@@ -1,116 +1,95 @@
 import customtkinter as ctk
-from utils.session import get_cart, add_to_cart
-from database.queries import get_exemplaire_history
+from utils.session import add_to_cart
+from database.queries import get_product_availability_count
+from components.scan_popup import RentValidationPopup
 
 class ProductCard(ctk.CTkFrame):
     def __init__(self, parent, controller, product: dict):
         super().__init__(parent)
         self.controller = controller
+        self.product = product
         
-        self.product_data = product
-        self.nom = product.get("nom_materiel", "N/A")
-        self.categorie = product.get("nom_materiel", "N/A")
-        self.code = product.get("id_exemplaire", "N/A")
-        self.disponible = self.is_available()
-        
-        # Configuration de la grille principale
-        self.grid_columnconfigure(1, weight=1)
+        self.nom = product.get("nom_materiel", "Inconnu")
+        self.photo = product.get("photo_materiel", "default")
 
-        self.configure(corner_radius=15, border_width=2, fg_color="#FFFFFF")
+        self.configure(corner_radius=10, border_width=1, fg_color="white", border_color="#D0D0D0", height=80)
         
-        # Image à gauche
-        self.image_label = ctk.CTkLabel(self, text="🖼️", width=150, height=150, fg_color="white", corner_radius=10)
-        self.image_label.grid(row=0, column=0, rowspan=4, padx=15, pady=15)
-        
-        # Cadre gauche (tout ce qui est aligné : catégorie → fiche produit)
-        self.left_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.left_frame.grid(row=0, column=1, sticky="w", padx=(5, 20), pady=10)
-        
-        # Catégorie
-        self.cat_label = ctk.CTkLabel(self.left_frame, text=f"{self.categorie}", text_color="gray")
-        self.cat_label.grid(row=0, column=0, sticky="w")
-        
-        # Nom de l’objet
-        self.nom_label = ctk.CTkLabel(self.left_frame, text=self.nom)
-        self.nom_label.grid(row=1, column=0, sticky="w", pady=(0, 5))
-        
-        # État (Disponible / Indisponible)
-        self.status_frame = ctk.CTkFrame(self.left_frame, fg_color="transparent")
-        self.status_frame.grid(row=2, column=0, sticky="w", pady=5)
-        
-        self.status_dispo = ctk.CTkButton(
-            self.status_frame,
-            text="Disponible",
-            fg_color="#8FBC8F",
-            text_color="black",
-            corner_radius=20,
-            width=100,
-            state="disabled"
-        )
-        
-        self.status_indispo = ctk.CTkButton(
-            self.status_frame,
-            text="Indisponible",
-            fg_color="#C94C3E",
-            text_color="black",
-            corner_radius=20,
-            width=100,
-            state="disabled"
-        )
+        # --- Layout Configuration (Horizontal Row) ---
+        self.grid_columnconfigure(0, weight=0) # Image
+        self.grid_columnconfigure(1, weight=1) # Info (Expands)
+        self.grid_columnconfigure(2, weight=0) # Buttons
 
-        self.update_status(self.disponible)
+        # 1. Image (Left)
+        self.img_label = ctk.CTkLabel(
+            self, 
+            text="📷", 
+            fg_color="#F0F0F0", 
+            corner_radius=5,
+            width=60, 
+            height=60
+        )
+        self.img_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
         
-        # Fiche produit / Historique / Code
-        self.actions_frame = ctk.CTkFrame(self.left_frame, fg_color="transparent")
-        self.actions_frame.grid(row=3, column=0, sticky="w", pady=(10, 10))
+        # 2. Info (Center)
+        # Title
+        self.title_lbl = ctk.CTkLabel(
+            self, 
+            text=self.nom, 
+            font=("Helvetica", 16, "bold"),
+            anchor="w"
+        )
+        self.title_lbl.grid(row=0, column=1, sticky="sw", padx=(0, 10), pady=(10, 0))
+
+        # Stock Availability
+        self.stock_count = get_product_availability_count(self.nom)
+        stock_color = "green" if self.stock_count > 0 else "red"
+        stock_text = f"✅ {self.stock_count} disponible(s)" if self.stock_count > 0 else "❌ Rupture de stock"
         
-        self.btn_fiche = ctk.CTkButton(self.actions_frame, text="Fiche produit", width=120, fg_color="white", text_color="black", command=self.open_product_page, border_width=2)
-        self.btn_fiche.pack(side="left", padx=5)
-        
-        # Boutons à droite : Emprunter / Réserver
-        self.right_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.right_frame.grid(row=0, column=2, rowspan=4, padx=20, pady=15)
-        
-        self.btn_emprunter = ctk.CTkButton(self.right_frame, text="Emprunter", width=120, command=self.add_product_to_cart)
-        self.btn_emprunter.pack(pady=(0, 15))
-        
-        self.btn_reserver = ctk.CTkButton(self.right_frame, text="Réserver", width=120)
-        self.btn_reserver.pack()
+        self.lbl_stock = ctk.CTkLabel(
+            self, 
+            text=stock_text, 
+            text_color=stock_color, 
+            font=("Helvetica", 12)
+        )
+        self.lbl_stock.grid(row=1, column=1, sticky="nw", padx=(0, 10), pady=(0, 10))
+
+        # 3. Buttons (Right)
+        self.btn_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.btn_frame.grid(row=0, column=2, rowspan=2, padx=15, pady=10)
+
+        # Button: Details
+        self.btn_see = ctk.CTkButton(
+            self.btn_frame,
+            text="Fiche Produit",
+            fg_color="transparent",
+            border_width=1,
+            text_color="gray",
+            width=100,
+            command=self.open_product_page
+        )
+        self.btn_see.pack(side="left", padx=5)
+
+        # Button: Rent (Triggers Scan Popup)
+        self.btn_rent = ctk.CTkButton(
+            self.btn_frame,
+            text="Emprunter",
+            fg_color="#B17457",
+            hover_color="#9C6049",
+            width=100,
+            state="normal" if self.stock_count > 0 else "disabled",
+            command=self.initiate_rent
+        )
+        self.btn_rent.pack(side="left", padx=5)
 
     def open_product_page(self):
-        if self.code != 'N/A':
-            self.controller.show_product_page(self.code)
-        else:
-            print("Erreur : Impossible d'ouvrir la page, ID manquant")
+        page = self.controller.pages["ProductPage"]
+        page.set_product_name(self.nom)
+        self.controller.show_page("ProductPage")
 
-    def open_history_page(self):
-        if self.code != 'N/A':
-            self.controller.show_product_history_page(self.code)
-        else:
-            print("Erreur : Impossible d'ouvrir la page, ID manquant")
+    def initiate_rent(self):
+        # Open the Popup to scan the specific item
+        RentValidationPopup(self, self.nom, self.confirm_rent)
 
-    def add_product_to_cart(self):
-        print(f"Adding {self.product_data} to cart", )
-        items_in_panier = get_cart()
-        if self.product_data not in items_in_panier:
-            add_to_cart(self.product_data)
-            self.controller.show_page("MainPage")
-
-    def is_available(self):
-        product_id = self.product_data["id_exemplaire"]
-        product_history =  get_exemplaire_history(product_id)
-        
-        if(product_history == []):
-            print(f"No product history for {product_id}")
-            return True
-
-
-    def update_status(self, is_available):
-
-        self.status_dispo.pack_forget()
-        self.status_indispo.pack_forget()
-
-        if is_available:
-            self.status_dispo.pack(side="left")
-        else:
-            self.status_dispo.pack(side="left")
+    def confirm_rent(self, item):
+        add_to_cart(item)
+        self.controller.show_page("MainPage") # Refresh UI to update cart and stock counts

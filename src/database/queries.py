@@ -2,9 +2,6 @@ from database.connection import get_db
 import mysql.connector
 
 def execute_query(query, params=None, fetch_one=False, fetch_all=False, is_commit=False, dictionary_cursor=False):
-    """
-    Exécute une requête de manière sécurisée avec gestion des curseurs.
-    """
     connection = get_db()
     if not connection or not connection.is_connected():
         raise Exception("Database is not connected.")
@@ -24,9 +21,9 @@ def execute_query(query, params=None, fetch_one=False, fetch_all=False, is_commi
             return cursor.fetchall()
             
     except mysql.connector.Error as err:
-        print(f"Erreur SQL : {err}")
+        print(f"Erreur SQL : {err}\nQuery: {query}\nParams: {params}")
         if is_commit:
-            connection.rollback() # Annuler les changements en cas d'erreur
+            connection.rollback()
         return None
     finally:
         cursor.close()
@@ -45,283 +42,280 @@ def get_all_users():
     query = "SELECT id_personnel, mail FROM Personnel"
     return execute_query(query, fetch_all=True, dictionary_cursor=True)
 
-def get_all_products_with_category():
+def get_all_materiels():
     query = """
         SELECT
-            m.id_exemplaire, m.derniere_localisation, m.nom_materiel, m.lieu_rangement, t.photo_materiel
+            nom_materiel,
+            photo_materiel,
+            frequence_entretient,
+            notice_materiel
         FROM
-            Exemplaire m
-        JOIN
-            Materiel t ON m.nom_materiel = t.nom_materiel
+            Materiel
     """
     return execute_query(query, fetch_all=True, dictionary_cursor=True)
 
-
-def get_product_by_name(nom_produit: int):
+def get_product_by_name(nom_produit: str):
     query = """
-        SELECT
+        SELECT 
             m.nom_materiel, m.photo_materiel, m.frequence_entretient, m.notice_materiel
-        FROM
+        FROM 
             Materiel m
-        WHERE
+        WHERE 
             m.nom_materiel = %s
     """
     params = (nom_produit,)
-    return execute_query(query, params, fetch_all=True, dictionary_cursor=True)
-
+    return execute_query(query, params, fetch_one=True, dictionary_cursor=True) # Changed to fetch_one
 
 def get_exemplaires_by_product_id(produit_id: int):
+    """Récupère un exemplaire spécifique par son ID unique."""
     query = """
-        SELECT
+        SELECT 
             m.id_exemplaire, m.date_garantie, m.date_dernier_entretient, m.derniere_localisation, m.nom_materiel, m.lieu_rangement, t.photo_materiel, t.frequence_entretient, t.notice_materiel
-        FROM 
+        FROM  
             Exemplaire m
-        JOIN
+        JOIN 
             Materiel t ON m.nom_materiel = t.nom_materiel
-        WHERE
+        WHERE 
             m.id_exemplaire = %s
     """
     params = (produit_id,)
     return execute_query(query, params, fetch_one=True, dictionary_cursor=True)
 
+def get_exemplaires_by_nom_materiel(nom_materiel: str):
+    """Récupère tous les exemplaires d'un type de matériel donné."""
+    query = """
+        SELECT 
+            id_exemplaire, date_dernier_entretient, lieu_rangement as salle_rangement
+        FROM 
+            Exemplaire
+        WHERE 
+            nom_materiel = %s
+    """
+    params = (nom_materiel,)
+    return execute_query(query, params, fetch_all=True, dictionary_cursor=True)
 
 def get_exemplaire_history(id: int):
     query = """
-    SELECT
-        e.id_emprunt, e.motif, e.date_emprunt, e.date_rendu
-    FROM
+    SELECT 
+        e.id_emprunt, e.motif, e.date_emprunt, 'En cours' as date_rendu, p.nom, p.prenom
+    FROM 
         Emprunt e
-    JOIN
-        Personnel p ON e.#id_personnel = p.id_personnel
-    JOIN
-        Materiel t ON m.#nom_materiel = t.nom_materiel 
+    JOIN 
+        Personnel p ON e.id_personnel = p.id_personnel
+    JOIN 
+        Exemplaire ex ON e.id_exemplaire = ex.id_exemplaire
     WHERE e.id_exemplaire = %s
-    ORDER BY
-        e.date_rendu DESC
+    ORDER BY 
+        e.date_emprunt DESC
     """
     params = (id,)
     return execute_query(query, params, fetch_all=True, dictionary_cursor=True)
 
+def get_product_details(nom_materiel):
+    """Get generic info for the top of the Product Page."""
+    query = "SELECT * FROM Materiel WHERE nom_materiel = %s"
+    return execute_query(query, (nom_materiel,), fetch_one=True, dictionary_cursor=True)
+
+def get_product_name_by_exemplaire_id(exemplaire_id):
+    """
+    Finds the generic product name associated with a specific ID.
+    Used when a user scans a barcode to find the product page.
+    """
+    query = "SELECT nom_materiel FROM Exemplaire WHERE id_exemplaire = %s"
+    result = execute_query(query, (exemplaire_id,), fetch_one=True, dictionary_cursor=True)
+    if result:
+        return result['nom_materiel']
+    return None
+
+def get_exemplaire_availability(exemplaire_id: int):
+    """
+    Check availability based on the LATEST loan.
+    Returns True if available, False if currently borrowed.
+    """
+    # 1. Query the database for the most recent loan of this specific item
+    query = """
+        SELECT date_rendu 
+        FROM Emprunt 
+        WHERE id_exemplaire = %s 
+        ORDER BY id_emprunt DESC 
+        LIMIT 1
+    """
+    params = (exemplaire_id,)
+    last_loan = execute_query(query, params, fetch_one=True, dictionary_cursor=True)
+
+    # 2. Logic Evaluation
+    
+    # Case A: The item has never been borrowed before.
+    if last_loan is None:
+        return True
+        
+    date_rendu = last_loan.get('date_rendu')
+    
+    # Case B: The item was borrowed, and 'date_rendu' is empty/None.
+    # This means the item is currently OUT.
+    if date_rendu is None or str(date_rendu).strip() == "":
+        return False 
+        
+    # Case C: The item was borrowed, but has a 'date_rendu'.
+    # This means it was returned.
+    return True
+
+def get_product_availability_count(nom_materiel):
+    """
+    Returns the number of available copies for a generic product.
+    Used to Enable/Disable the Rent button on the main page.
+    """
+    # Get all IDs for this product
+    query = "SELECT id_exemplaire FROM Exemplaire WHERE nom_materiel = %s"
+    exemplaires = execute_query(query, (nom_materiel,), fetch_all=True, dictionary_cursor=True)
+    
+    available_count = 0
+    for ex in exemplaires:
+        # Reuse the availability logic (check latest date_rendu)
+        if get_exemplaire_availability(ex['id_exemplaire']):
+            available_count += 1
+            
+    return available_count
+
+def validate_scan_match(scanned_id, required_product_name):
+    """
+    Verifies:
+    1. Does this ID exist?
+    2. Is it the correct product type (e.g., scanned a Drill ID while on Drill card)?
+    3. Is it available?
+    """
+    # 1. Get details of scanned ID
+    query = "SELECT nom_materiel FROM Exemplaire WHERE id_exemplaire = %s"
+    result = execute_query(query, (scanned_id,), fetch_one=True, dictionary_cursor=True)
+    
+    if not result:
+        return False, "Code barre inconnu."
+    
+    # 2. Check Type Match
+    if result['nom_materiel'] != required_product_name:
+        return False, f"Ce code correspond à : {result['nom_materiel']}"
+    
+    # 3. Check Availability
+    if not get_exemplaire_availability(scanned_id):
+        return False, "Cet exemplaire est déjà emprunté."
+        
+    return True, "OK"
+
+def get_exemplaires_with_status(nom_materiel):
+    """
+    Returns all copies (exemplaires) of a specific product.
+    Includes a subquery or join logic to determine if it is currently borrowed.
+    """
+
+    query = """
+        SELECT 
+            e.id_exemplaire, 
+            e.lieu_rangement, 
+            e.date_dernier_entretient,
+            (
+                SELECT date_rendu 
+                FROM Emprunt emp 
+                WHERE emp.id_exemplaire = e.id_exemplaire 
+                ORDER BY id_emprunt DESC 
+                LIMIT 1
+            ) as last_return_date,
+            (
+                SELECT count(*) 
+                FROM Emprunt emp2 
+                WHERE emp2.id_exemplaire = e.id_exemplaire
+            ) as total_loans
+        FROM Exemplaire e
+        WHERE e.nom_materiel = %s
+    """
+    items = execute_query(query, (nom_materiel,), fetch_all=True, dictionary_cursor=True)
+    if not items: return None
+    # Post-process status in Python for clarity
+    results = []
+    for item in items:
+        is_available = True
+        if item['total_loans'] > 0:
+            d_rendu = item.get('last_return_date')
+            if not d_rendu or str(d_rendu).strip() == "":
+                is_available = False
+        
+        item['is_available'] = is_available
+        results.append(item)
+        
+    return results
 
 def update_username(id_personnel: int, new_id: int):
-    if not isinstance(new_id, int):
-        raise ValueError("new_id doit être un entier")
-    if not isinstance(id_personnel, int):
-        raise ValueError("id_personnel doit être un entier")
-    
-    if get_user_by_id(new_id):
-        print("Erreur : un utilisateur ayant cet identifiant existe déjà")
-        return
-    else:
-        query = "UPDATE Personnel SET Personnel.id_personnel = %s WHERE Personnel.id_personnel = %s"
-        params = (new_id, id_personnel)
-        return execute_query(query, params, is_commit=True)
+    query = "UPDATE Personnel SET Personnel.id_personnel = %s WHERE Personnel.id_personnel = %s"
+    params = (new_id, id_personnel)
+    return execute_query(query, params, is_commit=True)
     
 def update_email(id_personnel: int, new_mail: str):
-    if not isinstance(new_mail, str):
-        raise ValueError("new_id doit être un entier")
-    if not isinstance(id_personnel, int):
-        raise ValueError("id_personnel doit être un entier")
-    
-    if get_user_by_email(new_mail):
-        print("Erreur : un utilisateur ayant cet email existe déjà")
-        return
-    else:
-        query = "UPDATE Personnel SET Personnel.mail = %s WHERE Personnel.id_personnel = %s"
-        params = (new_mail, id_personnel)
-        return execute_query(query, params, is_commit=True)
-
-
-
+    query = "UPDATE Personnel SET Personnel.mail = %s WHERE Personnel.id_personnel = %s"
+    params = (new_mail, id_personnel)
+    return execute_query(query, params, is_commit=True)
 
 def add_user(id_personnel, mail, type_personnel, nom, prenom):    
-    # Verifier le format des données avant insertion
-    if not isinstance(id_personnel, int):
-        raise ValueError("id_personnel doit être un entier.")
-    if not isinstance(mail, str) or "@" not in mail:
-        raise ValueError("mail doit être une chaîne de caractères valide.")
-    if not isinstance(type_personnel, str):
-        raise ValueError("type_personnel doit être une chaîne de caractères.")
-    if not isinstance(nom, str):
-        raise ValueError("nom doit être une chaîne de caractères.")
-    if not isinstance(prenom, str):
-        raise ValueError("prenom doit être une chaîne de caractères.")
-
-    query = "INSERT INTO Personnel (id_personnel, mail, type_personnel, nom, prenom) VALUES ('%s', '%s', '%s', '%s', '%s')"
+    query = "INSERT INTO Personnel (id_personnel, mail, type_personnel, nom, prenom) VALUES (%s, %s, %s, %s, %s)"
     params = (id_personnel, mail, type_personnel, nom, prenom)
     return execute_query(query, params, is_commit=True)
     
-
-    
 def add_material(id_exemplaire, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel):
-    
-    #verifier le format des données avant insertion
-    if not isinstance(id_exemplaire, int):
-        raise ValueError("id_exemplaire doit être un entier.")
-    if not isinstance(date_garantie, str):
-        raise ValueError("date_garantie doit être une chaine de caractères.")
-    if not isinstance(date_dernier_entretient, str):
-        raise ValueError("date_dernier_entretient doit être une chaine de caractères.")
-    if not isinstance(derniere_localisation, str):
-        raise ValueError("dernière_localisation doit être une chaîne de caractères.")
-    if not isinstance(nom_materiel, str):
-        raise ValueError("nom_materiel doit être une chaîne de caractères.")
-
-    query = "INSERT INTO Exemplaire (id_exemplaire, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel) VALUES ('%s', '%s', '%s', '%s', '%s')"
+    query = "INSERT INTO Exemplaire (id_exemplaire, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel) VALUES (%s, %s, %s, %s, %s)"
     params = (id_exemplaire, date_garantie, date_dernier_entretient, derniere_localisation, nom_materiel)
     return execute_query(query, params, is_commit=True)
-
     
 def add_matos(nom_materiel, photo_materiel, frequence_entretient, notice_materiel):
-    
-    #verifier le format des données avant insertion
-    if not isinstance(nom_materiel, str):
-        raise ValueError("nom_materiel doit être une chaine de caractères.")
-    if not isinstance(photo_materiel, str):
-        raise ValueError("photo_materiel doit être une chaine de caractères.")
-    if not isinstance(frequence_entretient, str):
-        raise ValueError("frequence_entretient doit être une chaine de caractères.")
-    if not isinstance(notice_materiel, str):
-        raise ValueError("notice_materiel doit être une chaine de caractère.")
-   
-    query = "INSERT INTO Materiel (nom_materiel, photo_materiel, frequence_entretient, nom_materiel) VALUES ('%s', '%s', '%s', '%s')"
+    query = "INSERT INTO Materiel (nom_materiel, photo_materiel, frequence_entretient, notice_materiel) VALUES (%s, %s, %s, %s)"
     params = (nom_materiel, photo_materiel, frequence_entretient, notice_materiel)
     return execute_query(query, params, is_commit=True)
  
-    
-def add_loan(id_emprunt, motif, date_emprunt, id_exemplaire, id_personnel):
-    
-    #verifier le format des données avant insertion
-    if not isinstance(id_emprunt, int):
-        raise ValueError("id_emprunt doit être un entier.")
-    if not isinstance(motif, str):
-        raise ValueError("motif doit être une chaine de caractères.")
-    if not isinstance(date_emprunt, str):
-        raise ValueError("date_emprunt doit être une chaine de caractères.")
-    if not isinstance(id_exemplaire, int):
-        raise ValueError("id_exemplaire doit être un entier.")
-    if not isinstance(id_personnel, int):
-        raise ValueError("id_personnel doit être un entier.")
-
-    query = "INSERT INTO Emprunt (id_emprunt, motif, date_emprunt, id_exemplaire, id_personnel) VALUES ('%s', '%s', '%s','%s', '%s')"
-    params = (id_emprunt, motif, date_emprunt, id_exemplaire, id_personnel)
+def add_loan(motif, date_emprunt, id_exemplaire, id_personnel):
+    query = "INSERT INTO Emprunt (motif, date_emprunt, id_exemplaire, id_personnel) VALUES (%s, %s, %s, %s)"
+    params = (motif, date_emprunt, id_exemplaire, id_personnel)
     return execute_query(query, params, is_commit=True)
-
     
 def add_instructions(notice_materiel):
-    
-    #verifier le format des données avant insertion
-    if not isinstance(notice_materiel, str):
-        raise ValueError("notice_materiel doit être une chaine de caractère.")
-
-    query = "INSERT INTO Notice (notice_materiel) VALUES ('%s')"
+    query = "INSERT INTO Notice (notice_materiel) VALUES (%s)"
     params =  (notice_materiel,)
     return execute_query(query, params, is_commit=True)
  
-    
-def add_storage(id_exemplaire, lieu_rangement):
-    
-    #verifier le format des données avant insertion
-    if not isinstance(id_exemplaire, int):
-        raise ValueError("id_exemplaire doit être un entier.")
-    if not isinstance(lieu_rangement, str):
-        raise ValueError("lieu_rangement doit être une chaine de caractère.")
-
-    cursor = get_db().cursor()
-    query = "INSERT INTO Rangement (id_exemplaire, lieu_rangement) VALUES ('%s', '%s')" % (id_exemplaire, lieu_rangement)
-    cursor.execute(query)
-    get_db().commit()
-    
+def add_storage(lieu_rangement):
+    query = "INSERT INTO Rangement (lieu_rangement) VALUES (%s)"
+    params = (lieu_rangement,)
+    return execute_query(query, params, is_commit=True)
     
 def add_kit(nom_kit):
-    
-    #verifier le format des données avant insertion
-    if not isinstance(nom_kit, str):
-        raise ValueError("nom_kit doit être une chaine de caractère.")
-
-    cursor = get_db().cursor()
-    query = "INSERT INTO Kit (nom_kit) VALUES ('%s')" % (nom_kit)
-    cursor.execute(query)
-    get_db().commit()
+    query = "INSERT INTO Kit (nom_kit) VALUES (%s)"
+    params = (nom_kit,)
+    return execute_query(query, params, is_commit=True)
   
-    
 def add_kit_de_materiel(nom_kit, nom_materiel):
-    
-    #verifier le format des données avant insertion
-    if not isinstance(nom_kit, str):
-        raise ValueError("nom_kit doit être une chaine de caractère.")
-    if not isinstance(nom_materiel, str):
-        raise ValueError("nom_materiel doit être une chaine de caractères.")
-
-    cursor = get_db().cursor()
-    query = "INSERT INTO Kit (nom_kit, nom_materiel) VALUES ('%s', '%s')" % (nom_kit, nom_materiel)
-    cursor.execute(query)
-    get_db().commit()
-    
-def add_history(date_rendue, id_exemplaire, id_personnel):
-    
-    #verifier le format des données avant insertion
-    if not isinstance(date_rendue, str):
-        raise ValueError("date_rendue doit être une chaine de caractère.")
-    if not isinstance(id_exemplaire, int):
-        raise ValueError("id_exemplaire doit être un entier.")
-    if not isinstance(id_personnel, int):
-        raise ValueError("id_personnel doit être un entier.")
-
-    cursor = get_db().cursor()
-    query = "INSERT INTO Historique (date_rendue, id_exemplaire, id_personnel) VALUES ('%s', '%s', '%s'')" % (date_rendue, id_exemplaire, id_personnel)
-    cursor.execute(query)
-    get_db().commit()
-    
+    query = "INSERT INTO Kit_Materiel (nom_kit, nom_materiel) VALUES (%s, %s)"
+    params = (nom_kit, nom_materiel)
+    return execute_query(query, params, is_commit=True)
     
 def add_reservation(date_reservation, id_personnel, id_exemplaire):
-    
-    #verifier le format des données avant insertion
-    if not isinstance(date_reservation, str):
-        raise ValueError("date_reservation doit être une chaine de caractère.")
-    if not isinstance(id_personnel, int):
-        raise ValueError("id_personnel doit être un entier.")
-    if not isinstance(id_exemplaire, int):
-        raise ValueError("id_exemplaire doit être un entier.")
-    
-    cursor = get_db().cursor()
-    query = "INSERT INTO Reservation (date_reservation, id_personnel, id_exemplaire) VALUES ('%s', '%s', '%s'')" % (date_reservation, id_personnel, id_exemplaire)
-    cursor.execute(query)
-    get_db().commit()
+    query = "INSERT INTO Reservation (date_reservation, id_personnel, id_exemplaire) VALUES (%s, %s, %s)"
+    params = (date_reservation, id_personnel, id_exemplaire)
+    return execute_query(query, params, is_commit=True)
 
 def update_materiel(product_name: str, data: dict):
-    """
-    Met à jour les informations d'un produit dans les tables Materiel et Matos.
-    data peut contenir :
-        - frequence_entretient
-        - date_dernier_entretient
-        - notice_materiel (PDF)
-    """
-
-    if not isinstance(product_name, str):
-        raise ValueError("product_name doit être une chaine de caractére.")
-
-    # Récupérer les valeurs
     frequence_entretient = data.get("frequence_entretient")
     date_dernier_entretient = data.get("date_dernier_entretient")
-    notice_materiel = data.get("pdf_path")  # correspond au champ PDF
+    notice_materiel = data.get("pdf_path")
     photo_materiel = data.get("photo_materiel")
 
-    # --- Mise à jour table Materiel ---
     query_materiel = """
         UPDATE Materiel
-        SET date_dernier_entretient = %s, notice_materiel = %s, photo_materiel = %s
+        SET frequence_entretient = %s, notice_materiel = %s
         WHERE nom_materiel = %s
     """
-    params_materiel = (date_dernier_entretient, notice_materiel, photo_materiel, product_name)
+    params_materiel = (frequence_entretient, notice_materiel, product_name)
     execute_query(query_materiel, params_materiel, is_commit=True)
-
-
     
-def delete_emprunt(id_materiel, id_personnel):
+def delete_emprunt(id_exemplaire, id_personnel):
     query = """
             DELETE FROM Emprunt
-            WHERE id_materiel = %s AND id_personnel = %s
+            WHERE id_exemplaire = %s AND id_personnel = %s
             """
-    params = (id_materiel, id_personnel)
+    params = (id_exemplaire, id_personnel)
     execute_query(query, params, is_commit=True)
