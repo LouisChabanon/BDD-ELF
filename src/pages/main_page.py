@@ -3,7 +3,7 @@ import tkinter as tk
 from components.bandeau_sup import Band_sup
 from components.panier import PanierFrame
 from components.product_card import ProductCard
-from database.queries import get_all_materiels, get_product_name_by_exemplaire_id
+from database.queries import get_all_materiels, get_all_materiels_with_stock
 from utils.session import get_session
 
 class MainPage(ctk.CTkFrame):
@@ -40,7 +40,7 @@ class MainPage(ctk.CTkFrame):
         self.load_catalog()
 
     def load_catalog(self):
-        self.all_products = get_all_materiels()
+        self.all_products = get_all_materiels_with_stock()
         self.render_list(self.all_products)
 
     def render_list(self, products):
@@ -55,7 +55,6 @@ class MainPage(ctk.CTkFrame):
         # Render Rows
         for product in products:
             card = ProductCard(self.scroll_container, self.controller, product)
-            # Using pack with fill="x" creates the Row layout
             card.pack(fill="x", pady=5, padx=5)
 
     def handle_search(self, event):

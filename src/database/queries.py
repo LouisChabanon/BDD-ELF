@@ -1,6 +1,7 @@
 from database.connection import get_db
 import mysql.connector
 
+
 def execute_query(query, params=None, fetch_one=False, fetch_all=False, is_commit=False, dictionary_cursor=False):
     connection = get_db()
     if not connection or not connection.is_connected():
@@ -28,10 +29,42 @@ def execute_query(query, params=None, fetch_one=False, fetch_all=False, is_commi
     finally:
         cursor.close()
 
-def get_user_by_email(email: str):
-    query = "SELECT * FROM Personnel WHERE mail = %s"
-    params = (email,)
-    return execute_query(query, params, fetch_one=True, dictionary_cursor=True)
+def get_all_materiels_with_stock():
+    query = """
+        SELECT 
+            m.nom_materiel, 
+            m.photo_materiel, 
+            m.frequence_entretient, 
+            m.notice_materiel,
+            
+            -- Calculate Total Copies
+            COUNT(e.id_exemplaire) as total_copies,
+            
+            -- Calculate Unavailable Copies (Currently in Emprunt with no return date)
+            (
+                SELECT COUNT(*)
+                FROM Emprunt emp
+                JOIN Exemplaire ex_emp ON emp.id_exemplaire = ex_emp.id_exemplaire
+                WHERE ex_emp.nom_materiel = m.nom_materiel
+                AND (emp.date_rendu IS NULL OR emp.date_rendu = '')
+            ) as borrowed_count
+            
+        FROM Materiel m
+        LEFT JOIN Exemplaire e ON m.nom_materiel = e.nom_materiel
+        GROUP BY m.nom_materiel, m.photo_materiel, m.frequence_entretient, m.notice_materiel
+    """
+    
+    results = execute_query(query, fetch_all=True, dictionary_cursor=True)
+    
+    # Post-process to calculate simple 'stock_dispo' for the UI
+    if results:
+        for row in results:
+            total = row['total_copies']
+            borrowed = row['borrowed_count']
+            row['stock_dispo'] = total - borrowed
+            
+    return results
+
 
 def get_user_by_id(user_id: str):
     query = "SELECT * FROM Personnel WHERE Personnel.id_personnel = %s"
@@ -81,18 +114,6 @@ def get_exemplaires_by_product_id(produit_id: int):
     params = (produit_id,)
     return execute_query(query, params, fetch_one=True, dictionary_cursor=True)
 
-def get_exemplaires_by_nom_materiel(nom_materiel: str):
-    """Récupère tous les exemplaires d'un type de matériel donné."""
-    query = """
-        SELECT 
-            id_exemplaire, date_dernier_entretient, lieu_rangement as salle_rangement
-        FROM 
-            Exemplaire
-        WHERE 
-            nom_materiel = %s
-    """
-    params = (nom_materiel,)
-    return execute_query(query, params, fetch_all=True, dictionary_cursor=True)
 
 def get_exemplaire_history(id: int):
     query = """

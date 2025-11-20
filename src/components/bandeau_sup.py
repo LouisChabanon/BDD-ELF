@@ -16,9 +16,9 @@ class Band_sup(ctk.CTkFrame):
         self.grid_columnconfigure(2, weight=0)
 
         self.user_button = None
-        self.refresh()
 
-
+        # Bouton Accueil 
+        self.home_button = ctk.CTkButton(self,text="🏠",width=40,height=40,fg_color="#B17457",hover_color="#9C6049",font=("Helvetica", 22),command=lambda: controller.show_page("MainPage"))
 
 
         # Bouton "Ajouter objet"
@@ -44,6 +44,11 @@ class Band_sup(ctk.CTkFrame):
             self.user_button.destroy()
         
         self.user = get_session()
+
+        if self.user:
+            self.home_button.grid(row=0, column=3, sticky="e", padx=10, pady=10)
+        else:
+            self.home_button.grid_forget()
 
         # Style du bouton utilisateur / connexion
         button_style = {
@@ -78,15 +83,14 @@ class Band_sup(ctk.CTkFrame):
         self.user_button.grid(row=0, column=0, sticky="w", padx=20, pady=10)
 
     # Méthodes associées aux boutons 
-    def show_user_info(self):
-        print(f"Utilisateur connecté : {self.user}")
         
-
     def add_page(self):
         print("Aller à la page d'ajout d'objet")
         
 
     def return_page(self):
+        """Redirige vers la page de rendu du matériel"""
+        self.controller.show_page("ReturnPage")
         print("Aller à la page de rendu d'objet")
 
         

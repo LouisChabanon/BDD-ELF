@@ -16,14 +16,6 @@ class ProductPage(ctk.CTkFrame):
         self.bandeau = Band_sup(self, controller)
         self.bandeau.pack(fill="x", side="top")
 
-        # --- HEADER: Search Bar for Spontaneous Scan ---
-        self.top_bar = ctk.CTkFrame(self, fg_color="transparent")
-        self.top_bar.pack(fill="x", padx=20, pady=10)
-
-        self.search_entry = ctk.CTkEntry(self.top_bar, placeholder_text="Scanner un code-barre pour chercher...", width=300)
-        self.search_entry.pack(side="right")
-        self.search_entry.bind("<Return>", self.handle_spontaneous_scan)
-
         # Scrollable Area
         self.scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.scroll_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -63,7 +55,6 @@ class ProductPage(ctk.CTkFrame):
             self.controller.show_page("LoginPage")
             return
         self.bandeau.refresh()
-        self.search_entry.delete(0, 'end')
 
         if not self.product_name:
             return
