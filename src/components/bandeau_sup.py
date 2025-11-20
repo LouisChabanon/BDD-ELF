@@ -17,7 +17,8 @@ class Band_sup(ctk.CTkFrame):
 
         self.user_button = None
 
-
+        # Bouton Accueil 
+        self.home_button = ctk.CTkButton(self,text="🏠",width=40,height=40,fg_color="#B17457",hover_color="#9C6049",font=("Helvetica", 22),command=lambda: controller.show_page("MainPage"))
 
 
         # Bouton "Ajouter objet"
@@ -42,6 +43,11 @@ class Band_sup(ctk.CTkFrame):
             self.user_button.destroy()
         
         self.user = get_session()
+
+        if self.user:
+            self.home_button.grid(row=0, column=3, sticky="e", padx=10, pady=10)
+        else:
+            self.home_button.grid_forget()
 
         # Style du bouton utilisateur / connexion
         button_style = {
