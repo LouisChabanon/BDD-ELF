@@ -141,7 +141,7 @@ try:
         # 1. Personnel
         query_personnel = "INSERT IGNORE INTO Personnel (id_personnel, mail, type_personnel, nom, prenom) VALUES (%s, %s, %s, %s, %s)"
         data_personnel = [
-           (164, 'chloe.duffau@ensam.eu', 'doctorant', 'Duffau', 'Chloe'),
+           (164, 'chloe.duffau@ensam.eu', 'doctorant', 'Dufau', 'Chloe'),
            (94165, 'zoe.hautreux@ensam.eu', 'doctorant', 'Hautreux', 'Zoé'), 
            (16852, 'adrien.ungemuth@ensam.eu', 'doctorant', 'Ungemuth', 'Adrien'), 
            (24, 'louis.chabanon@ensam.eu', 'doctorant', 'Chabanon', 'Louis'),
