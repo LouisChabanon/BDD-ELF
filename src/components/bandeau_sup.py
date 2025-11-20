@@ -86,6 +86,8 @@ class Band_sup(ctk.CTkFrame):
         
 
     def return_page(self):
+        """Redirige vers la page de rendu du matériel"""
+        self.controller.show_page("ReturnPage")
         print("Aller à la page de rendu d'objet")
 
         

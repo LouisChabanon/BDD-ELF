@@ -34,8 +34,6 @@ class ReturnPage(ctk.CTkFrame):
         self.login_button = ctk.CTkButton(self, text="Rendre", font=("Helvetica", 16), command=self.login)
         self.login_button.pack(pady=20)
 
-
-
         # Message d'erreur
         self.error_label = ctk.CTkLabel(self, text="", font=("Helvetica", 14), text_color="maroon")
         self.error_label.pack(pady=10)
