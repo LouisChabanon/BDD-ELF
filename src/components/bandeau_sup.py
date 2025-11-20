@@ -25,7 +25,8 @@ class Band_sup(ctk.CTkFrame):
         self.add_button = ctk.CTkButton(
             self, 
             text="Ajouter objet", 
-            command=self.add_page,
+            command=lambda: self.controller.show_page("AjouterObjetPage")
+,
         )
         self.add_button.grid(row=0, column=1, sticky="e", padx=10, pady=10)
 
