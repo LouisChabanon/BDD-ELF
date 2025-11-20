@@ -39,6 +39,9 @@ class AppController(ctk.CTk):
             page = self.pages[page_name]
             if hasattr(page, 'refresh'):
                 page.refresh()
+            # Refresh du bandeau 
+            if hasattr(page, 'bandeau'):
+                page.bandeau.refresh()
             page.tkraise()
         except KeyError:
             print(f"Erreur : La page {page_name} n'existe pas")
