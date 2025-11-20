@@ -1,7 +1,11 @@
+# src/components/product_card.py
+
 import customtkinter as ctk
 from utils.session import add_to_cart
-from database.queries import get_product_availability_count
 from components.scan_popup import RentValidationPopup
+
+# REMOVED: from database.queries import get_product_availability_count 
+# We do not want to import queries here to avoid lag
 
 class ProductCard(ctk.CTkFrame):
     def __init__(self, parent, controller, product: dict):
@@ -11,6 +15,8 @@ class ProductCard(ctk.CTkFrame):
         
         self.nom = product.get("nom_materiel", "Inconnu")
         self.photo = product.get("photo_materiel", "default")
+
+        self.stock_count = product.get("stock_dispo", 0)
 
         self.configure(corner_radius=10, border_width=1, fg_color="white", border_color="#D0D0D0", height=80)
         
@@ -41,7 +47,6 @@ class ProductCard(ctk.CTkFrame):
         self.title_lbl.grid(row=0, column=1, sticky="sw", padx=(0, 10), pady=(10, 0))
 
         # Stock Availability
-        self.stock_count = get_product_availability_count(self.nom)
         stock_color = "green" if self.stock_count > 0 else "red"
         stock_text = f"✅ {self.stock_count} disponible(s)" if self.stock_count > 0 else "❌ Rupture de stock"
         
@@ -92,4 +97,4 @@ class ProductCard(ctk.CTkFrame):
 
     def confirm_rent(self, item):
         add_to_cart(item)
-        self.controller.show_page("MainPage") # Refresh UI to update cart and stock counts
+        self.controller.show_page("MainPage")
