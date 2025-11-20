@@ -16,7 +16,6 @@ class Band_sup(ctk.CTkFrame):
         self.grid_columnconfigure(2, weight=0)
 
         self.user_button = None
-        self.refresh()
 
 
 
@@ -77,10 +76,7 @@ class Band_sup(ctk.CTkFrame):
         self.user_button.grid(row=0, column=0, sticky="w", padx=20, pady=10)
 
     # Méthodes associées aux boutons 
-    def show_user_info(self):
-        print(f"Utilisateur connecté : {self.user}")
         
-
     def add_page(self):
         print("Aller à la page d'ajout d'objet")
         
