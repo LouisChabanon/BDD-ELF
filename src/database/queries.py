@@ -319,3 +319,35 @@ def delete_emprunt(id_exemplaire, id_personnel):
             """
     params = (id_exemplaire, id_personnel)
     execute_query(query, params, is_commit=True)
+
+
+
+def get_all_rangements():
+    """Récupère la liste de tous les lieux de rangement."""
+    query = "SELECT lieu_rangement FROM Rangement"
+    results = execute_query(query, fetch_all=True, dictionary_cursor=True)
+    
+    # Retourne une liste simple des noms de rangement, car c'est ce que votre ComboBox semble attendre
+    if results:
+        return [r['lieu_rangement'] for r in results]
+    return []
+
+def materiel_exists(nom_materiel: str):
+    """Vérifie si un matériel avec ce nom existe déjà."""
+    query = "SELECT COUNT(*) FROM Materiel WHERE nom_materiel = %s"
+    params = (nom_materiel,)
+    result = execute_query(query, params, fetch_one=True)
+    
+    # execute_query retourne un tuple pour fetch_one sans dictionary_cursor
+    # Nous vérifions si le COUNT est supérieur à 0
+    return result is not None and result[0] > 0
+
+def exemplaire_exists(id_exemplaire: int):
+    """Vérifie si un exemplaire avec cet ID existe déjà."""
+    query = "SELECT COUNT(*) FROM Exemplaire WHERE id_exemplaire = %s"
+    params = (id_exemplaire,)
+    result = execute_query(query, params, fetch_one=True)
+    
+    # execute_query retourne un tuple pour fetch_one sans dictionary_cursor
+    # Nous vérifions si le COUNT est supérieur à 0
+    return result is not None and result[0] > 0
