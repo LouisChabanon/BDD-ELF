@@ -6,6 +6,16 @@ from pages.product_page import ProductPage
 from pages.user_page import UserPage
 from pages.product_history_page import ProductHistoryPage
 from pages.modif_product_page import ModifierProduitPage
+import dotenv
+import os
+import threading
+import smbclient
+
+dotenv.load_dotenv()
+SMB_SRV = os.getenv("SAMBA_SRV")
+SMB_USER = os.getenv("SAMBA_USER")
+SMB_PASSWORD = os.getenv("SAMBA_PASSWORD")
+
 
 class AppController(ctk.CTk):
     def __init__(self):
@@ -13,6 +23,14 @@ class AppController(ctk.CTk):
         self.title("Base de données ELF")
         self.geometry("1280x720")
         
+
+        ctk.set_appearance_mode("light")
+        ctk.set_default_color_theme("src/assets/theme.json")
+
+        self.smb_connected = False
+        self.smb_error = None
+        threading.Thread(target=self.connect_to_smb, daemon=True).start()
+
         self.pages = {}
         self.container = ctk.CTkFrame(self)
         self.container.pack(fill="both", expand=True)
@@ -20,6 +38,20 @@ class AppController(ctk.CTk):
         self._init_pages()
         self.show_page("LoginPage")
 
+    def connect_to_smb(self):
+        try:
+            print(f"Connexion au serveur Samba {SMB_SRV}...")
+            smbclient.register_session(
+                SMB_SRV,
+                username=SMB_USER,
+                password=SMB_PASSWORD
+            )
+            print("Connexion au serveur Samba réussie.")
+        except Exception as e:
+            print(f"Erreur de connexion au serveur Samba : {e}")
+            exit(1)
+
+        
     def _init_pages(self):
         self.pages["LoginPage"] = LoginPage(self.container, self)
         self.pages["MainPage"] = MainPage(self.container, self)

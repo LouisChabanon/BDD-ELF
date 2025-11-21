@@ -161,16 +161,16 @@ try:
         # 3. Materiel
         query_materiel = "INSERT IGNORE INTO Materiel (nom_materiel, photo_materiel, frequence_entretient, notice_materiel) VALUES (%s, %s, %s, %s)"
         data_materiel = [
-            ('mascarpone', 'photo_mascarpone', '1', 'notice_mascarpone'),
-            ('boudoirs', 'photo_boudoirs', '2', 'notice_boudoirs'),
-            ('café', 'photo_café', '1', 'notice_café'),
-            ('chocolat', 'photo_chocolat', '1', 'notice_chocolat'),
-            ('sucre', 'photo_sucre', '2', 'notice_sucre'),
-            ('oeufs', 'photo_oeufs', '1', 'notice_oeufs'),
-            ('poireaux', 'photo_poireaux', '3', 'notice_poireaux'),
-            ('patate', 'photo_patate', '6', 'notice_patate'),
-            ('sel', 'photo_sel', '6', 'notice_sel'),
-            ('carotte', 'photo_carotte', '1', 'notice_carotte')       
+            ('mascarpone', 'photo_mascarpone.png', '1', 'notice_mascarpone'),
+            ('boudoirs', 'photo_boudoirs.png', '2', 'notice_boudoirs'),
+            ('café', 'photo_café.png', '1', 'notice_café'),
+            ('chocolat', 'photo_chocolat.png', '1', 'notice_chocolat'),
+            ('sucre', 'photo_sucre.png', '2', 'notice_sucre'),
+            ('oeufs', 'photo_oeufs.png', '1', 'notice_oeufs'),
+            ('poireaux', 'photo_poireaux.png', '3', 'notice_poireaux'),
+            ('patate', 'photo_patate.png', '6', 'notice_patate'),
+            ('sel', 'photo_sel.png', '6', 'notice_sel'),
+            ('carotte', 'photo_carotte.png', '1', 'notice_carotte')       
         ]
         db_cursor.executemany(query_materiel, data_materiel)
         print(f"  -> Materiel checked/added.")

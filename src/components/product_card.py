@@ -1,11 +1,18 @@
-# src/components/product_card.py
-
 import customtkinter as ctk
 from utils.session import add_to_cart
 from components.scan_popup import RentValidationPopup
+import threading
+import os
+import io
+import dotenv
+from PIL import Image
+import smbclient
+import time
 
-# REMOVED: from database.queries import get_product_availability_count 
-# We do not want to import queries here to avoid lag
+dotenv.load_dotenv()
+SAMBA_SRV = os.getenv("SAMBA_SRV")
+SAMBA_USER = os.getenv("SAMBA_USER")
+SAMBA_PASSWORD = os.getenv("SAMBA_PASSWORD")
 
 class ProductCard(ctk.CTkFrame):
     def __init__(self, parent, controller, product: dict):
@@ -14,7 +21,7 @@ class ProductCard(ctk.CTkFrame):
         self.product = product
         
         self.nom = product.get("nom_materiel", "Inconnu")
-        self.photo = product.get("photo_materiel", "default")
+        self.photo = product.get("photo_materiel", None)
 
         self.stock_count = product.get("stock_dispo", 0)
 
@@ -85,6 +92,53 @@ class ProductCard(ctk.CTkFrame):
             command=self.initiate_rent
         )
         self.btn_rent.pack(side="left", padx=5)
+
+        if self.photo and self.photo != "default":
+            threading.Thread(target=self.load_image_thread, daemon=True).start()
+
+    def load_image_thread(self):
+        def load_image_thread(self):
+        """
+        Waits for global SMB connection, then fetches image.
+        """
+        # 1. WAIT FOR CONNECTION
+        # We check the controller (App) to see if SMB is ready.
+        # We loop every 0.5 seconds.
+        max_retries = 20  # Wait max 10 seconds
+        attempts = 0
+        
+        while not self.controller.smb_connected:
+            if self.controller.smb_error:
+                print("SMB Failed globally. Stopping image load.")
+                return
+            
+            if attempts > max_retries:
+                print("Timed out waiting for SMB connection.")
+                return
+
+            time.sleep(0.5) # Sleep briefly to not hog CPU
+            attempts += 1
+
+        # 2. FETCH IMAGE (Only runs once connected)
+        try:
+            clean_filename = self.photo_filename.lstrip("\\/") 
+            full_path = f"{SAMBA_SRV}\{clean_filename}"
+
+            with smbclient.open_file(full_path, mode="rb") as file:
+                file_data = file.read()
+
+            img_stream = io.BytesIO(file_data)
+            pil_image = Image.open(img_stream)
+            ctk_image = ctk.CTkImage(light_image=pil_image, dark_image=pil_image, size=(60, 60))
+
+            self.after(0, self.update_image_label, ctk_image)
+
+        except Exception as e:
+            print(f"Image load error: {e}")
+
+    def update_image_label(self, ctk_image):
+        self.img_label.configure(image=ctk_image, text="")
+
 
     def open_product_page(self):
         page = self.controller.pages["ProductPage"]
