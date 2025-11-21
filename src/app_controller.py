@@ -6,6 +6,10 @@ from pages.product_page import ProductPage
 from pages.user_page import UserPage
 from pages.product_history_page import ProductHistoryPage
 from pages.modif_product_page import ModifierProduitPage
+from pages.ajouter_product import AjouterMaterielPage
+from pages.ajouter_product import AjouterObjetPage
+from pages.ajouter_product import AjouterExemplairePage
+from pages.return_page import ReturnPage
 import dotenv
 import os
 import threading
@@ -60,6 +64,11 @@ class AppController(ctk.CTk):
         self.pages["UserPage"] = UserPage(self.container, self)
         self.pages["ProductHistoryPage"] = ProductHistoryPage(self.container, self)
         self.pages["ModifierProduitPage"] = ModifierProduitPage(self.container, self)
+        self.pages["AjouterObjetPage"] = AjouterObjetPage(self.container, self)
+        self.pages["AjouterMaterielPage"] = AjouterMaterielPage(self.container, self)
+        self.pages["AjouterExemplairePage"] = AjouterExemplairePage(self.container, self)
+        self.pages["ReturnPage"] = ReturnPage(self.container, self)
+
 
         for page in self.pages.values():
             page.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -69,6 +78,9 @@ class AppController(ctk.CTk):
             page = self.pages[page_name]
             if hasattr(page, 'refresh'):
                 page.refresh()
+            # Refresh du bandeau 
+            if hasattr(page, 'bandeau'):
+                page.bandeau.refresh()
             page.tkraise()
         except KeyError:
             print(f"Erreur : La page {page_name} n'existe pas")
