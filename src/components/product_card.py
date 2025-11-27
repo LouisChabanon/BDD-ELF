@@ -97,7 +97,6 @@ class ProductCard(ctk.CTkFrame):
             threading.Thread(target=self.load_image_thread, daemon=True).start()
 
     def load_image_thread(self):
-        def load_image_thread(self):
         """
         Waits for global SMB connection, then fetches image.
         """
