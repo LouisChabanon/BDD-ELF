@@ -101,8 +101,6 @@ class ProductCard(ctk.CTkFrame):
         Waits for global SMB connection, then fetches image.
         """
         # 1. WAIT FOR CONNECTION
-        # We check the controller (App) to see if SMB is ready.
-        # We loop every 0.5 seconds.
         max_retries = 20  # Wait max 10 seconds
         attempts = 0
         
@@ -115,25 +113,32 @@ class ProductCard(ctk.CTkFrame):
                 print("Timed out waiting for SMB connection.")
                 return
 
-            time.sleep(0.5) # Sleep briefly to not hog CPU
+            time.sleep(0.5)
             attempts += 1
 
-        # 2. FETCH IMAGE (Only runs once connected)
+        # 2. FETCH IMAGE
         try:
-            clean_filename = self.photo_filename.lstrip("\\/") 
-            full_path = f"{SAMBA_SRV}\{clean_filename}"
+
+            # Ensure slashes are correct for Windows SMB (Backslashes)
+            clean_filename = self.photo.replace("/", "\\").lstrip("\\")
+            
+            full_path = fr"\\{SAMBA_SRV}\{clean_filename}"
 
             with smbclient.open_file(full_path, mode="rb") as file:
                 file_data = file.read()
 
             img_stream = io.BytesIO(file_data)
             pil_image = Image.open(img_stream)
+            
+            # Keep aspect ratio roughly
             ctk_image = ctk.CTkImage(light_image=pil_image, dark_image=pil_image, size=(60, 60))
 
+            # Update UI on main thread
             self.after(0, self.update_image_label, ctk_image)
 
         except Exception as e:
-            print(f"Image load error: {e}")
+            print(f"Image load error for {full_path}: {e}")
+            pass
 
     def update_image_label(self, ctk_image):
         self.img_label.configure(image=ctk_image, text="")

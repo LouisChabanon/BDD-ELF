@@ -10,6 +10,7 @@ from pages.ajouter_product import AjouterMaterielPage
 from pages.ajouter_product import AjouterObjetPage
 from pages.ajouter_product import AjouterExemplairePage
 from pages.return_page import ReturnPage
+from pages.confirm_rent_page import ConfirmRentPage
 import dotenv
 import os
 import threading
@@ -50,10 +51,12 @@ class AppController(ctk.CTk):
                 username=SMB_USER,
                 password=SMB_PASSWORD
             )
+            self.smb_connected = True 
             print("Connexion au serveur Samba réussie.")
         except Exception as e:
+            self.smb_error = str(e)
+            self.smb_connected = False
             print(f"Erreur de connexion au serveur Samba : {e}")
-            exit(1)
 
         
     def _init_pages(self):
@@ -68,6 +71,7 @@ class AppController(ctk.CTk):
         self.pages["AjouterMaterielPage"] = AjouterMaterielPage(self.container, self)
         self.pages["AjouterExemplairePage"] = AjouterExemplairePage(self.container, self)
         self.pages["ReturnPage"] = ReturnPage(self.container, self)
+        self.pages["ConfirmRentPage"] = ConfirmRentPage(self.container, self)
 
 
         for page in self.pages.values():

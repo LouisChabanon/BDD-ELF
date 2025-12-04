@@ -14,10 +14,9 @@ class PanierFrame(ctk.CTkFrame):
         title = ctk.CTkLabel(self, text="🛒 Panier", font=("Helvetica", 20, "bold"))
         title.pack(pady=(15, 10))
 
-        # --- CORRECTION LAYOUT ---
         # 1. Packer le bouton du bas D'ABORD
         # Il réserve sa place en bas.
-        self.validate_btn = ctk.CTkButton(self, text="Valider mes emprunts")
+        self.validate_btn = ctk.CTkButton(self, text="Valider mes emprunts", command=lambda: controller.show_page("ConfirmRentPage"))
         self.validate_btn.pack(side="bottom", pady=20, padx=20)
 
         # --- Mise en place du Scroll (Canvas) ---
@@ -80,7 +79,6 @@ class PanierFrame(ctk.CTkFrame):
         total_items = len(cart_products)
         for i, item in enumerate(cart_products):
             
-            # Utiliser .get() est plus sûr pour les dictionnaires
             nom_text = item.get('nom_materiel', 'Nom inconnu')
             loc_text = item.get('lieu_rangement', 'Lieu inconnu')
 
