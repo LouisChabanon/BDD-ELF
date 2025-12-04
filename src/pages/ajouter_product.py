@@ -11,16 +11,15 @@ from database.queries import (
 )
 
 
-# ================================================================
-# 🔷 PAGE PRINCIPALE : Choix Ajouter Objet
-# ================================================================
+
 class AjouterObjetPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
         self.configure(fg_color="#F9F7F0")
 
-        Band_sup(self, controller).pack(fill="x", side="top")
+        self.bandeau = Band_sup(self, controller)
+        self.bandeau.pack(fill="x", side="top")
 
         frame = ctk.CTkFrame(self, fg_color="#F9F7F0")
         frame.pack(expand=True)
@@ -44,16 +43,16 @@ class AjouterObjetPage(ctk.CTkFrame):
         ).pack(pady=10)
 
 
-# ================================================================
-# 🔷 PAGE : Ajouter un matériel
-# ================================================================
+#Ajouter un matériel
+
 class AjouterMaterielPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
         self.configure(fg_color="#F9F7F0")
 
-        Band_sup(self, controller).pack(fill="x", side="top")
+        self.bandeau = Band_sup(self, controller)
+        self.bandeau.pack(fill="x", side="top")
 
         main = ctk.CTkFrame(self, fg_color="#F9F7F0")
         main.pack(fill="both", expand=True, padx=40, pady=20)
@@ -62,8 +61,6 @@ class AjouterMaterielPage(ctk.CTkFrame):
         header = ctk.CTkFrame(main, fg_color="#F9F7F0")
         header.pack(fill="x")
         ctk.CTkLabel(header, text="Ajouter un matériel", font=("Helvetica", 24, "bold")).pack(side="left")
-        ctk.CTkButton(header, text="← Accueil",
-                      command=lambda: controller.show_page("ProductPage")).pack(side="right")
 
         # form
         form = ctk.CTkFrame(main, fg_color="#F9F7F0")
@@ -95,6 +92,9 @@ class AjouterMaterielPage(ctk.CTkFrame):
         ctk.CTkLabel(form, text="Lieu de rangement :", font=("Helvetica", 16)).grid(row=4, column=0, sticky="e", pady=8)
         self.lieu_combo = ctk.CTkComboBox(form, width=380, values=self.load_rangements())
         self.lieu_combo.grid(row=4, column=1, pady=8)
+
+        self.error_label = ctk.CTkLabel(self, text="", text_color="maroon")
+        self.error_label.pack(pady=5)
 
         # Actions
         actions = ctk.CTkFrame(main, fg_color="#F9F7F0")
@@ -130,11 +130,11 @@ class AjouterMaterielPage(ctk.CTkFrame):
         notice = self.notice_var.get().strip() or None
 
         if not nom:
-            self.popup("Erreur", "Veuillez saisir un nom.")
+            self.error_label.configure(text= "Veuillez saisir un nom.")
             return
 
         if materiel_exists(nom):
-            self.popup("Erreur", "Un matériel portant ce nom existe déjà.")
+            self.error_label.configure(text="Un matériel portant ce nom existe déjà.")
             return
 
         data = {
@@ -173,16 +173,16 @@ class AjouterMaterielPage(ctk.CTkFrame):
         ctk.CTkButton(frame, text="OK", command=p.destroy).pack(pady=10)
 
 
-# ================================================================
-# 🔷 PAGE : Ajouter un exemplaire
-# ================================================================
+# Ajouter un exemplaire
+
 class AjouterExemplairePage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
         self.configure(fg_color="#F9F7F0")
 
-        Band_sup(self, controller).pack(fill="x", side="top")
+        self.bandeau = Band_sup(self, controller)
+        self.bandeau.pack(fill="x", side="top")
 
         main = ctk.CTkFrame(self, fg_color="#F9F7F0")
         main.pack(fill="both", expand=True, padx=40, pady=20)
@@ -191,8 +191,6 @@ class AjouterExemplairePage(ctk.CTkFrame):
         header = ctk.CTkFrame(main, fg_color="#F9F7F0")
         header.pack(fill="x")
         ctk.CTkLabel(header, text="Ajouter un exemplaire", font=("Helvetica", 24, "bold")).pack(side="left")
-        ctk.CTkButton(header, text="← Accueil",
-                      command=lambda: controller.show_page("ProductPage")).pack(side="right")
 
         # form
         form = ctk.CTkFrame(main, fg_color="#F9F7F0")
@@ -228,6 +226,9 @@ class AjouterExemplairePage(ctk.CTkFrame):
         self.loc_entry = ctk.CTkEntry(form, width=380)
         self.loc_entry.grid(row=5, column=1, pady=8)
 
+        self.error_label = ctk.CTkLabel(self, text="", text_color="maroon")
+        self.error_label.pack(pady=5)
+
         # actions
         actions = ctk.CTkFrame(main, fg_color="#F9F7F0")
         actions.pack(fill="x", pady=20)
@@ -258,13 +259,13 @@ class AjouterExemplairePage(ctk.CTkFrame):
 
         # Validations simples
         if not id_val.isdigit():
-            self.popup("Erreur", "L’ID doit être un nombre.")
+            self.error_label.configure(text="L’ID doit être un nombre.")
             return
 
         id_val = int(id_val)
 
         if exemplaire_exists(id_val):
-            self.popup("Erreur", "Cet exemplaire existe déjà.")
+            self.error_label.configure(text="Cet exemplaire existe déjà.")
             return
 
         data = {
@@ -290,8 +291,6 @@ class AjouterExemplairePage(ctk.CTkFrame):
         p.geometry("420x180")
         p.title(title)
         p.configure(fg_color="#F9F7F0")
-
-        Band_sup(p, self.controller).pack(fill="x", side="top")
 
         frame = ctk.CTkFrame(p, fg_color="#F9F7F0")
         frame.pack(expand=True)
