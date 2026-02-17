@@ -357,8 +357,8 @@ def return_product(id_exemplaire):
             ) AS sub
         )
     """
-    result = execute_query(query, (id_exemplaire,), commit=True)
-    return(result)
+    execute_query(query, (id_exemplaire,), commit=True)
+
 
 
 
