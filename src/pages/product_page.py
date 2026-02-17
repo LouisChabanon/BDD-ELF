@@ -81,8 +81,9 @@ class ProductPage(ctk.CTkFrame):
             row = ctk.CTkFrame(self.list_container, fg_color="white", corner_radius=5)
             row.pack(fill="x", pady=2)
             
+            # --- Informations de l'exemplaire ---
             ctk.CTkLabel(row, text=f"#{item['id_exemplaire']}", font=("Courier", 14, "bold"), width=80).pack(side="left", padx=10, pady=10)
-            ctk.CTkLabel(row, text=item.get('lieu_rangement', 'N/A'), width=150).pack(side="left", padx=10)
+            ctk.CTkLabel(row, text=item.get('lieu_rangement', 'N/A'), width=120).pack(side="left", padx=10)
             
             is_avail = item['is_available']
             status_text = "DISPONIBLE" if is_avail else "EMPRUNTÉ"
@@ -90,16 +91,58 @@ class ProductPage(ctk.CTkFrame):
             
             ctk.CTkLabel(row, text=status_text, text_color=status_color, font=("Helvetica", 12, "bold"), width=100).pack(side="left", padx=10)
 
-            if is_avail:
-                # BUTTON CLICK -> OPEN POPUP
-                ctk.CTkButton(
-                    row, 
-                    text="Ajouter au panier", 
-                    fg_color="#B17457", 
-                    command=lambda i=item: self.initiate_add_to_cart(i)
-                ).pack(side="right", padx=20)
-            else:
-                ctk.CTkButton(row, text="Historique", fg_color="gray", state="disabled").pack(side="right", padx=20)
+            # --- Groupe de boutons d'action ---
+
+            # 1. Bouton Historique (Ouvre product_history_page)
+            # Note : On utilise une fonction intermédiaire pour passer l'ID si nécessaire
+            ctk.CTkButton(
+                row, 
+                text="Historique", 
+                fg_color="#B17457", 
+                width=100,
+                command=lambda i=item['id_exemplaire']: self.go_to_history(i)
+            ).pack(side="right", padx=5)
+
+            # 2. Bouton Réserver (Ouvre reserve_product)
+            ctk.CTkButton(
+                row, 
+                text="Réserver", 
+                fg_color="#B17457", 
+                width=100,
+                command=lambda i=item['id_exemplaire']: self.go_to_reserve(i)
+            ).pack(side="right", padx=5)
+
+            # 3. Bouton Emprunter (Ajouter au panier)
+            btn_emprunter = ctk.CTkButton(
+                row, 
+                text="Emprunter", 
+                width=100,
+                fg_color="#B17457",
+                hover_color="#8c5a44",
+                command=lambda i=item: self.initiate_add_to_cart(i)
+            )
+            btn_emprunter.pack(side="right", padx=5)
+
+            if not is_avail:
+                btn_emprunter.configure(
+                    state="normal",        # Reste en 'normal' pour garder le texte bien noir
+                    fg_color="#a59f93",    
+                    text_color="#D8D2C2",  
+                    hover=False,           
+                    command=lambda: None   # Écrase la commande : cliquer ne fait plus rien
+                )
+
+    # Nouvelles méthodes de navigation
+    def go_to_history(self, exemplaire_id):
+        # Si votre controller a une méthode pour stocker l'ID de l'objet sélectionné
+        if hasattr(self.controller, "shared_data"):
+            self.controller.shared_data["selected_exemplaire"] = exemplaire_id
+        self.controller.show_page("product_history_page")
+
+    def go_to_reserve(self, exemplaire_id):
+        if hasattr(self.controller, "shared_data"):
+            self.controller.shared_data["selected_exemplaire"] = exemplaire_id
+        self.controller.show_page("reserve_product")
 
     def initiate_add_to_cart(self, item):
         # This opens the modal. The item is ONLY added if the modal succeeds.
