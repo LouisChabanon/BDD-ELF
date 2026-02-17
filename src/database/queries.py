@@ -341,6 +341,24 @@ def delete_emprunt(id_exemplaire, id_personnel):
     params = (id_exemplaire, id_personnel)
     execute_query(query, params, is_commit=True)
 
+def return_product(id_exemplaire):
+    query = """
+        UPDATE Emprunt
+        SET date_rendu = NOW()
+        WHERE id_emprunt = (
+            SELECT id_emprunt
+            FROM (
+                SELECT id_emprunt
+                FROM Emprunt
+                WHERE id_exemplaire = %s
+                AND date_rendu IS NULL
+                ORDER BY id_emprunt DESC
+                LIMIT 1
+            ) AS sub
+        )
+    """
+    execute_query(query, (id_exemplaire,), commit=True)
+
 
 
 def get_all_rangements():
