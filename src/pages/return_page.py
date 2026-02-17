@@ -2,6 +2,7 @@ import customtkinter as ctk
 from components.bandeau_sup import Band_sup
 from utils.session import set_session
 from database.queries import get_user_by_id
+from database.queries import return_product
 
 class ReturnPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -49,10 +50,25 @@ class ReturnPage(ctk.CTkFrame):
             self.error_label.configure(text="Veuillez scanner ou saisir un code barre.")
             return
 
-        # Pour l'instant, on se contente d'afficher le code scanné
-        print(f"Matériel scanné : {code_barre}")
-        self.error_label.configure(text=f"Matériel '{code_barre}' rendu avec succès ✅")
+        try:
+            success = return_product(code_barre)
 
-        # Optionnel : retour automatique vers la page principale après quelques secondes
-        # self.after(1500, lambda: self.controller.show_page("MainPage"))
+            if success:
+                self.error_label.configure(
+                    text=f"Matériel '{code_barre}' rendu avec succès ✅",
+                    text_color="green"
+                )
+            else:
+                self.error_label.configure(
+                    text="Aucun emprunt actif trouvé pour ce matériel.",
+                    text_color="maroon"
+                )
+
+        except Exception as e:
+            self.error_label.configure(
+                text=f"Erreur lors du rendu : {str(e)}",
+                text_color="maroon"
+            )
+
+        #self.username_entry.delete(0, "end")
 

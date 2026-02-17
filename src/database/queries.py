@@ -342,23 +342,24 @@ def delete_emprunt(id_exemplaire, id_personnel):
     execute_query(query, params, is_commit=True)
 
 def return_product(id_exemplaire):
-    query = """
+    check_query = """
+        SELECT id_emprunt
+        FROM Emprunt
+        WHERE id_exemplaire = %s
+        AND date_rendu IS NULL
+        ORDER BY id_emprunt DESC
+        LIMIT 1
+    """
+    emprunt = execute_query(check_query, (id_exemplaire,), fetch_one=True)
+    if not emprunt:
+        return False  # rien à rendre
+    update_query = """
         UPDATE Emprunt
         SET date_rendu = NOW()
-        WHERE id_emprunt = (
-            SELECT id_emprunt
-            FROM (
-                SELECT id_emprunt
-                FROM Emprunt
-                WHERE id_exemplaire = %s
-                AND date_rendu IS NULL
-                ORDER BY id_emprunt DESC
-                LIMIT 1
-            ) AS sub
-        )
+        WHERE id_emprunt = %s
     """
-    result = execute_query(query, (id_exemplaire,), commit=True)
-    return(result)
+    execute_query(update_query, (emprunt["id_emprunt"],), is_commit=True)
+    return True
 
 
 
