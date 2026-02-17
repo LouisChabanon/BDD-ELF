@@ -18,16 +18,16 @@ class MainPage(ctk.CTkFrame):
         self.content = ctk.CTkFrame(self, fg_color="transparent")
         self.content.pack(fill="both", expand=True)
 
-        # --- Right Side: Panier ---
+        # Panier 
         self.panier = PanierFrame(self.content, self.controller)
         self.panier.pack(side="right", fill="y", padx=10, pady=10)
         self.panier.configure(width=350)
 
-        # --- Left Side: Catalog ---
+        # Catalogue 
         self.catalog_frame = ctk.CTkFrame(self.content, fg_color="transparent")
         self.catalog_frame.pack(side="left", fill="both", expand=True, padx=20, pady=20)
 
-        # Search Bar
+        # Bar de recherche
         self.search_bar = ctk.CTkEntry(self.catalog_frame, placeholder_text="Rechercher ou scanner...", width=300)
         self.search_bar.pack(anchor="w", pady=(0, 20))
         self.search_bar.bind("<Return>", self.handle_search)
