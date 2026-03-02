@@ -350,7 +350,7 @@ def return_product(id_exemplaire):
         ORDER BY id_emprunt DESC
         LIMIT 1
     """
-    emprunt = execute_query(check_query, (id_exemplaire,), fetch_one=True)
+    emprunt = execute_query(check_query, (id_exemplaire,), fetch_one=True, dictionary_cursor=True)
     if not emprunt:
         return False  # rien à rendre
     update_query = """
