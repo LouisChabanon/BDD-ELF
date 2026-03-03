@@ -2,7 +2,7 @@ import os
 import mysql.connector
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv() #Charger les données de la base de donnée
 
 def execute_queries(cursor, queries):
     for query in queries:
@@ -15,10 +15,10 @@ def execute_queries(cursor, queries):
 try:
     # 1. Initial Connection (to create DB if missing)
     db_connection = mysql.connector.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        port=os.getenv("DB_PORT", "3306"),
-        user=os.getenv("DB_USER", "root"),
-        passwd=os.getenv("DB_PASSWORD", "")
+        host = os.getenv("DB_HOST", "localhost"),
+        port = os.getenv("DB_PORT", "3306"),
+        user = os.getenv("DB_USER", "root"),
+        passwd = os.getenv("DB_PASSWORD", "")
     )
     db_cursor = db_connection.cursor()
 
