@@ -17,8 +17,8 @@ class Band_sup(ctk.CTkFrame):
 
         self.user_button = None
 
-        # Bouton Accueil 
-        self.home_button = ctk.CTkButton(self,text="🏠",width=20,height=20,fg_color="#B17457",hover_color="#9C6049",font=("Helvetica", 20),command=lambda: controller.show_page("MainPage"))
+        # Bouton Accueil
+        self.home_button = ctk.CTkButton(self,text="🏠",width=20,height=20,fg_color="#B17457",hover_color="#9C6049",font=("Helvetica", 20),command=self.main_page)
 
 
         # Bouton "Ajouter objet"
