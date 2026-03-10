@@ -72,6 +72,7 @@ class AppController(ctk.CTk):
         self.pages["AjouterExemplairePage"] = AjouterExemplairePage(self.container, self)
         self.pages["ReturnPage"] = ReturnPage(self.container, self)
         self.pages["ConfirmRentPage"] = ConfirmRentPage(self.container, self)
+        self.pages["EmpruntsPage"]= SeeLoanPage(self.container, self)
 
 
         for page in self.pages.values():
