@@ -378,12 +378,12 @@ def get_borrowed_items(user_id):
             em.id_emprunt,
             m.nom_materiel,
             em.date_emprunt,
-            em.date_retour_prevue,
+            em.date_rendu,
             ex.id_exemplaire
         FROM Emprunt em
         JOIN Exemplaire ex ON em.id_exemplaire = ex.id_exemplaire
         JOIN Materiel m ON ex.id_materiel = m.id_materiel
-        WHERE em.id_utilisateur = %s
+        WHERE em.id_personnel = %s
         AND em.date_rendu IS NULL
         ORDER BY em.date_emprunt DESC
     """
