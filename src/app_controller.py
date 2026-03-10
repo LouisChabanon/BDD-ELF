@@ -4,6 +4,7 @@ from pages.main_page import MainPage
 from pages.register_page import RegisterPage
 from pages.product_page import ProductPage
 from pages.user_page import UserPage
+from pages.see_loan_page import SeeLoanPage
 from pages.product_history_page import ProductHistoryPage
 from pages.modif_product_page import ModifierProduitPage
 from pages.ajouter_product import AjouterMaterielPage
@@ -72,6 +73,7 @@ class AppController(ctk.CTk):
         self.pages["AjouterExemplairePage"] = AjouterExemplairePage(self.container, self)
         self.pages["ReturnPage"] = ReturnPage(self.container, self)
         self.pages["ConfirmRentPage"] = ConfirmRentPage(self.container, self)
+        self.pages["EmpruntsPage"]= SeeLoanPage(self.container, self)
 
 
         for page in self.pages.values():
