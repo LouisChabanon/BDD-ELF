@@ -19,10 +19,6 @@ class SeeLoanPage(ctk.CTkFrame):
         self.bandeau.pack(fill="x", side="top")
         self.bandeau.refresh()
 
-        # Conteneur principal pour le contenu
-        #self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
-        #self.main_frame.pack(expand=True)
-
         #Liste scrollable
         self.scroll_container = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.scroll_container.pack(fill="both", expand=True, padx=20, pady=20)
