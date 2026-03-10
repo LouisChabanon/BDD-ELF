@@ -30,7 +30,6 @@ class SeeLoanPage(ctk.CTkFrame):
     def load_borrowed(self):
         session = get_session()
         id_user = session["id_utilisateur"]
-        from database.queries import get_borrowed_items(user_id)
         items = get_borrowed_items(id_user)
 
         self.render_list(items)
@@ -49,5 +48,9 @@ class SeeLoanPage(ctk.CTkFrame):
                 text=f"{item['nom_materiel']} - Retour le {item['date_retour']}"
             )
             label.pack(fill="x", pady=5, padx=5)
+    
+    def refresh(self, args=None):
+        self.load_borrowed()
+        
 
 
