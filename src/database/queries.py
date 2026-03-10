@@ -37,30 +37,29 @@ def get_all_materiels_with_stock():
             m.frequence_entretient, 
             m.notice_materiel,
             
-            -- Calculate Total Copies
-            COUNT(e.id_exemplaire) as total_copies,
+            -- Compte total des exemplaires existants pour ce type de matériel
+            (SELECT COUNT(*) FROM Exemplaire e WHERE e.nom_materiel = m.nom_materiel) as total_copies,
             
-            -- Calculate Unavailable Copies (Currently in Emprunt with no return date)
+            -- Compte uniquement les exemplaires qui ont un emprunt en cours (date_rendu IS NULL)
             (
-                SELECT COUNT(*)
+                SELECT COUNT(DISTINCT emp.id_exemplaire)
                 FROM Emprunt emp
                 JOIN Exemplaire ex_emp ON emp.id_exemplaire = ex_emp.id_exemplaire
                 WHERE ex_emp.nom_materiel = m.nom_materiel
-                AND (emp.date_rendu IS NULL OR emp.date_rendu = '')
+                AND emp.date_rendu IS NULL
             ) as borrowed_count
             
         FROM Materiel m
-        LEFT JOIN Exemplaire e ON m.nom_materiel = e.nom_materiel
-        GROUP BY m.nom_materiel, m.photo_materiel, m.frequence_entretient, m.notice_materiel
     """
     
     results = execute_query(query, fetch_all=True, dictionary_cursor=True)
     
-    # Post-process to calculate simple 'stock_dispo' for the UI
     if results:
         for row in results:
-            total = row['total_copies']
-            borrowed = row['borrowed_count']
+            # Sécurité pour éviter les erreurs NoneType
+            total = row['total_copies'] or 0
+            borrowed = row['borrowed_count'] or 0
+            # Calcul du stock réel disponible
             row['stock_dispo'] = total - borrowed
             
     return results
