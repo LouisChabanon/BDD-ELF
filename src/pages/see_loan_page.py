@@ -29,7 +29,7 @@ class SeeLoanPage(ctk.CTkFrame):
 
     def load_borrowed(self):
         session = get_session()
-        id_user = session["id_utilisateur"]
+        id_user = session["id_personnel"]
         items = get_borrowed_items(id_user)
 
         self.render_list(items)
