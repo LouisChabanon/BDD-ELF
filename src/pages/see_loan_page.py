@@ -48,5 +48,9 @@ class SeeLoanPage(ctk.CTkFrame):
                 text=f"{item['nom_materiel']} - Retour le {item['date_retour']}"
             )
             label.pack(fill="x", pady=5, padx=5)
+    
+    def refresh(self, args=None):
+        self.load_borrowed()
+        
 
 
