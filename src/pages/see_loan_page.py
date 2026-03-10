@@ -1,7 +1,9 @@
 import customtkinter as ctk
 from components.bandeau_sup import Band_sup
 from utils.session import set_session
+from utils.session import get_session
 from database.queries import get_user_by_id
+from database.queries import get_borrowed_items
 
 
 class SeeLoanPage(ctk.CTkFrame):
@@ -18,5 +20,34 @@ class SeeLoanPage(ctk.CTkFrame):
         self.bandeau.refresh()
 
         # Conteneur principal pour le contenu
-        self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.main_frame.pack(expand=True)
+        #self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
+        #self.main_frame.pack(expand=True)
+
+        #Liste scrollable
+        self.scroll_container = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        self.scroll_container.pack(fill="both", expand=True, padx=20, pady=20)
+
+    def load_borrowed(self):
+        session = get_session()
+        id_user = session["id_utilisateur"]
+        from database.queries import get_borrowed_items(user_id)
+        items = get_borrowed_items(id_user)
+
+        self.render_list(items)
+    
+    def render_list(self, items):
+        for widget in self.scroll_container.winfo_children():
+            widget.destroy()
+
+        if not items:
+            ctk.CTkLabel(self.scroll_container, text="Aucun objet emprunté.").pack(pady=20)
+            return
+
+        for item in items:
+            label = ctk.CTkLabel(
+                self.scroll_container,
+                text=f"{item['nom_materiel']} - Retour le {item['date_retour']}"
+            )
+            label.pack(fill="x", pady=5, padx=5)
+
+
