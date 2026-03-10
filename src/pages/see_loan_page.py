@@ -50,7 +50,9 @@ class SeeLoanPage(ctk.CTkFrame):
             label.pack(fill="x", pady=5, padx=5)
     
     def refresh(self, args=None):
-        self.load_borrowed()
-        
+        try:
+            self.load_borrowed()
+        except Exception as e:
+            print("Erreur refresh SeeLoanPage :", e)
 
 
