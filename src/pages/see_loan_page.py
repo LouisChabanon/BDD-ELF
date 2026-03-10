@@ -29,7 +29,7 @@ class SeeLoanPage(ctk.CTkFrame):
 
     def load_borrowed(self):
         session = get_session()
-        id_user = session["id_utilisateur"]
+        id_user = session["id_personnel"]
         items = get_borrowed_items(id_user)
 
         self.render_list(items)
@@ -45,7 +45,7 @@ class SeeLoanPage(ctk.CTkFrame):
         for item in items:
             label = ctk.CTkLabel(
                 self.scroll_container,
-                text=f"{item['nom_materiel']} - Retour le {item['date_retour']}"
+                text=f"{item['nom_materiel']} - Retour le {item['date_retour_prevue']}"
             )
             label.pack(fill="x", pady=5, padx=5)
     
