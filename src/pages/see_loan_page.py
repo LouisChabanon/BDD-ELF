@@ -41,7 +41,7 @@ class SeeLoanPage(ctk.CTkFrame):
         for item in items:
             label = ctk.CTkLabel(
                 self.scroll_container,
-                text=f"{item['nom_materiel']} - Retour le {item['date_retour_prevue']}"
+                text=f"{item['nom_materiel']}"
             )
             label.pack(fill="x", pady=5, padx=5)
     
