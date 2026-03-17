@@ -4,6 +4,7 @@ from utils.session import set_session
 from utils.session import get_session
 from database.queries import get_user_by_id
 from database.queries import get_borrowed_items
+from components.borrowed_product_card import BorrowedProductCard
 
 
 class SeeLoanPage(ctk.CTkFrame):
@@ -39,7 +40,7 @@ class SeeLoanPage(ctk.CTkFrame):
             return
 
         for item in items:
-            card = BorrowedItemCard(self.scroll_container, item)
+            card = BorrowedProductCard(self.scroll_container, self.controller, item)
             card.pack(fill="x", pady=5, padx=5)
             #label = ctk.CTkLabel(
             #    self.scroll_container,
