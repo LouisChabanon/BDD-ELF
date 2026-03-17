@@ -19,10 +19,6 @@ class SeeLoanPage(ctk.CTkFrame):
         self.bandeau.pack(fill="x", side="top")
         self.bandeau.refresh()
 
-        # Conteneur principal pour le contenu
-        #self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
-        #self.main_frame.pack(expand=True)
-
         #Liste scrollable
         self.scroll_container = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.scroll_container.pack(fill="both", expand=True, padx=20, pady=20)
@@ -43,11 +39,13 @@ class SeeLoanPage(ctk.CTkFrame):
             return
 
         for item in items:
-            label = ctk.CTkLabel(
-                self.scroll_container,
-                text=f"{item['nom_materiel']} - Retour le {item['date_retour_prevue']}"
-            )
-            label.pack(fill="x", pady=5, padx=5)
+            card = BorrowedItemCard(self.scroll_container, item)
+            card.pack(fill="x", pady=5, padx=5)
+            #label = ctk.CTkLabel(
+            #    self.scroll_container,
+            #    text=f"{item['nom_materiel']}"
+            #)
+            #label.pack(fill="x", pady=5, padx=5)
     
     def refresh(self, args=None):
         try:

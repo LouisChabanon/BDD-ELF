@@ -378,21 +378,21 @@ def get_borrowed_items(user_id):
             em.id_emprunt,
             m.nom_materiel,
             em.date_emprunt,
-            em.date_retour_prevue,
             ex.id_exemplaire
         FROM Emprunt em
         JOIN Exemplaire ex ON em.id_exemplaire = ex.id_exemplaire
-        JOIN Materiel m ON ex.id_materiel = m.id_materiel
-        WHERE em.id_utilisateur = %s
-        AND em.date_rendu IS NULL
+        JOIN Materiel m ON ex.nom_materiel = m.nom_materiel
+        WHERE em.id_personnel = %s
         ORDER BY em.date_emprunt DESC
     """
-    return execute_query(
-    query,
-    (user_id,),
-    fetch_all=True,
-    dictionary_cursor=True
+    result = execute_query(
+        query,
+        (user_id,),
+        fetch_all=True,
+        dictionary_cursor=True
     )
+    print("Résultat SQL :", result)  # pour debug
+    return result
 #Test pour obtenir la liste des items empruntés par une personne
 
 def materiel_exists(nom_materiel: str):
