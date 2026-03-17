@@ -97,7 +97,8 @@ try:
             id_personnel INT,
             id_exemplaire INT,
             FOREIGN KEY (id_personnel) REFERENCES Personnel(id_personnel),
-            FOREIGN KEY (id_exemplaire) REFERENCES Exemplaire(id_exemplaire)
+            FOREIGN KEY (id_exemplaire) REFERENCES Exemplaire(id_exemplaire),
+            date_rendu TEXT
         )
         """,
         """
