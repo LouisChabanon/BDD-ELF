@@ -112,15 +112,12 @@ class BorrowedProductCard(ctk.CTkFrame):
         if self.stock_count > 0:
             stock_color = "green"
             stock_text = f"✅ {self.stock_count} disponible(s)"
-            button_state = "normal"  # On active le bouton
         else:
             stock_color = "red"
             stock_text = "❌ Rupture de stock"
-            button_state = "disabled" # On désactive le bouton
 
         # On APPLIQUE les changements aux widgets qui existent déjà dans le __init__
         self.lbl_stock.configure(text=stock_text, text_color=stock_color)
-        self.btn_rent.configure(state=button_state)
 
     def load_image_thread(self):
         """Télécharge l'image depuis le serveur Samba sans bloquer l'UI"""
