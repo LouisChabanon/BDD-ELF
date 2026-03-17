@@ -131,7 +131,8 @@ class ConfirmRentPage(ctk.CTkFrame):
                     motif=motif_complet,
                     date_emprunt=date_emprunt,
                     id_exemplaire=item['id_exemplaire'],
-                    id_personnel=user['id_personnel']
+                    id_personnel=user['id_personnel'],
+                    date_rendu=date_fin
                 )
                 success_count += 1
             
