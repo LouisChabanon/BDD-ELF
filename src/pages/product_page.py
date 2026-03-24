@@ -39,7 +39,7 @@ class ProductPage(ctk.CTkFrame):
         self.btn_pdf = ctk.CTkButton(self.info_container, text="📄 Notice PDF", width=100, command=self.open_pdf)
         self.btn_pdf.pack(anchor="w", pady=5)
 
-        # --- Bouton emprunter ---
+        # --- RENT BUTTON ---
         self.btn_rent = ctk.CTkButton(
             self.header_frame, 
             text="Emprunter ce produit", 
@@ -100,7 +100,7 @@ class ProductPage(ctk.CTkFrame):
             ctk.CTkLabel(row, text=item.get('lieu_rangement', 'N/A'), width=150).pack(side="left", padx=10)
             
             is_avail = item['is_available']
-            status_text = "● DISPONIBLE" if is_avail else "○ EMPRUNTÉ"
+            status_text = "DISPONIBLE" if is_avail else "EMPRUNTÉ"
             status_color = "#8FBC8F" if is_avail else "#C94C3E"
             
             ctk.CTkLabel(row, text=status_text, text_color=status_color, font=("Helvetica", 12, "bold")).pack(side="left", padx=20)
