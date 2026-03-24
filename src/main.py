@@ -12,6 +12,5 @@ if __name__ == "__main__":
         print(f"Erreur de connexion à la base de données : {e}")
         exit(1)
 
-
     app = AppController()
     app.mainloop()
