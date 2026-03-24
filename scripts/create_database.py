@@ -43,10 +43,7 @@ try:
     db_cursor = db_connection.cursor()
 
     # 3. Table Creation
-    #Suppression de l'ancienne base et création d'une nouvelle table
-    db_cursor.execute("DROP DATABASE IF EXISTS Inventaire_PJT")
-    db_cursor.execute("CREATE DATABASE Inventaire_PJT")
-    db_connection.close()
+
 
 
 
