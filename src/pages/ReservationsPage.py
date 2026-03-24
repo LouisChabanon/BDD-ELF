@@ -3,7 +3,7 @@ from components.bandeau_sup import Band_sup
 from utils.session import set_session
 from utils.session import get_session
 from database.queries import get_user_by_id
-from database.queries import get_borrowed_items
+from database.queries import get_booked_items
 
 class ReservationsPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
