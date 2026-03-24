@@ -43,6 +43,14 @@ try:
     db_cursor = db_connection.cursor()
 
     # 3. Table Creation
+    #Suppression de l'ancienne base et création d'une nouvelle table
+    db_cursor.execute("DROP DATABASE IF EXISTS Inventaire_PJT")
+    db_cursor.execute("CREATE DATABASE Inventaire_PJT")
+    db_connection.close()
+
+
+
+
     table_queries = [
         """
         CREATE TABLE IF NOT EXISTS Personnel(
@@ -121,9 +129,6 @@ try:
     print("Updating tables structure...")
     execute_queries(db_cursor, table_queries)
     
-    print(f"Reset database '{DB_NAME}'...")
-    db_cursor.execute(f"DROP DATABASE IF EXISTS {DB_NAME}")
-    db_cursor.execute(f"CREATE DATABASE {DB_NAME}")
     
     print("Seeding data (skipping duplicates)...")
     
