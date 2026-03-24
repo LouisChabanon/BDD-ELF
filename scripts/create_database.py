@@ -145,7 +145,8 @@ try:
            (94165, 'zoe.hautreux@ensam.eu', 'doctorant', 'Hautreux', 'Zoé'), 
            (16852, 'adrien.ungemuth@ensam.eu', 'doctorant', 'Ungemuth', 'Adrien'), 
            (24, 'louis.chabanon@ensam.eu', 'doctorant', 'Chabanon', 'Louis'),
-           (35, 'rayen.nouri@ensam.eu', 'doctorant', 'Nouri', 'Rayen')
+           (35, 'rayen.nouri@ensam.eu', 'doctorant', 'Nouri', 'Rayen'),
+           (4763,'amelie.montanier@ensam.eu','doctorant','Montanier','Amélie')
         ]
         db_cursor.executemany(query_personnel, data_personnel)
         print(f"  -> Personnel checked/added.")
