@@ -118,10 +118,7 @@ class ProductPage(ctk.CTkFrame):
         # 2. Feedback 
         messagebox.showinfo("Succès", f"Ajouté au panier : {item}")
 
-        # 3. l'exemplaire scanné apparaîtra comme "EMPRUNTÉ"
-        self.refresh()
-
-        # 4. Retour à la page principale 
+        # 3. Retour à la page principale 
         self.controller.show_page("MainPage")
 
     def initiate_rent(self):
