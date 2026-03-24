@@ -45,14 +45,6 @@ try:
     # 3. Table Creation
     table_queries = [
         """
-        DROP DATABASE Inventaire_PJT;
-        """,
-        """
-        CREATE TABLE IF NOT EXISTS Notice(
-            notice_materiel VARCHAR(100) PRIMARY KEY
-        )
-        """,
-        """
         CREATE TABLE IF NOT EXISTS Personnel(
             id_personnel INT PRIMARY KEY,
             mail TEXT,
@@ -128,6 +120,10 @@ try:
     
     print("Updating tables structure...")
     execute_queries(db_cursor, table_queries)
+    
+    print(f"Reset database '{DB_NAME}'...")
+    db_cursor.execute(f"DROP DATABASE IF EXISTS {DB_NAME}")
+    db_cursor.execute(f"CREATE DATABASE {DB_NAME}")
     
     print("Seeding data (skipping duplicates)...")
     
