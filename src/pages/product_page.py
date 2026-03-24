@@ -39,7 +39,7 @@ class ProductPage(ctk.CTkFrame):
         self.btn_pdf = ctk.CTkButton(self.info_container, text="📄 Notice PDF", width=100, command=self.open_pdf)
         self.btn_pdf.pack(anchor="w", pady=5)
 
-        # --- Bouton emprunter ---
+        # --- RENT BUTTON ---
         self.btn_rent = ctk.CTkButton(
             self.header_frame, 
             text="Emprunter ce produit", 
@@ -48,7 +48,7 @@ class ProductPage(ctk.CTkFrame):
             width=150,
             height=40,
             font=("Helvetica", 14, "bold"),
-            command=self.initiate_general_rent
+            command=self.initiate_rent
         )
         self.btn_rent.pack(side="right", padx=20)
 
@@ -100,30 +100,31 @@ class ProductPage(ctk.CTkFrame):
             ctk.CTkLabel(row, text=item.get('lieu_rangement', 'N/A'), width=150).pack(side="left", padx=10)
             
             is_avail = item['is_available']
-            status_text = "● DISPONIBLE" if is_avail else "○ EMPRUNTÉ"
+            status_text = "DISPONIBLE" if is_avail else "EMPRUNTÉ"
             status_color = "#8FBC8F" if is_avail else "#C94C3E"
             
             ctk.CTkLabel(row, text=status_text, text_color=status_color, font=("Helvetica", 12, "bold")).pack(side="left", padx=20)
             # NOTE : Les boutons individuels ont été supprimés ici pour nettoyer la vue.
 
-    def initiate_general_rent(self):
-        """Lance le scan. Ici on passe le nom du produit global"""
-        # On demande à l'utilisateur de scanner l'ID de n'importe quel exemplaire de ce produit
-        RentValidationPopup(self, self.product_name, self.confirm_general_rent)
+    def confirm_rent(self, item):
+        """
+        Action déclenchée après validation du scan dans la popup.
+        'item' est ici la valeur retournée par la popup (ex: l'identifiant scanné).
+        """
+        # 1. Ajoute au panier
+        # Note: on s'assure d'envoyer la donnée reçue par la popup
+        add_to_cart(item)
+        
+        # 2. Feedback 
+        messagebox.showinfo("Succès", f"Ajouté au panier : {item}")
 
-    def confirm_general_rent(self, scanned_item_id):
-        """
-        Action après scan. 
-        scanned_item_id est la valeur retournée par la popup (ex: l'ID scanné).
-        """
-        # Ici, on construit un mini-objet pour le panier
-        item_to_add = {
-            'id_exemplaire': scanned_item_id,
-            'nom_materiel': self.product_name
-        }
-        add_to_cart(item_to_add)
-        messagebox.showinfo("Succès", f"Produit {scanned_item_id} ajouté au panier.")
-        self.refresh() # Rafraîchir la liste pour voir l'exemplaire passer en "Emprunté"
+        # 3. Retour à la page principale 
+        self.controller.show_page("MainPage")
+
+    def initiate_rent(self):
+        """Ouvre la popup de scan pour valider l'emprunt"""
+        # On passe self.product_name comme référence pour le scan
+        RentValidationPopup(self, self.product_name, self.confirm_rent)
 
     def open_pdf(self):
         if self.pdf_path: 
