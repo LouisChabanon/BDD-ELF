@@ -94,7 +94,8 @@ Si vous testez l'application localement et n'avez pas de base de données MySQL 
 - Allez dans "Nouvelle base de données", tapez `bdd_elf` et cliquez sur "Créer".
 - *Vos identifiants dans le `.env` seront :* `DB_HOST=127.0.0.1`, `DB_USER=root`, `DB_PASSWORD=` (vide par défaut).
 
-**Solution sur un Serveur Local** (A TESTER, JAMAIS ESSAYER PAR MOI-MEME : PRENDRE UN RASPBERRY PI (le + simple) ET TEST !! (DMD à AE il doit en avoir))
+**Solution sur un Serveur Local** 
+(A TESTER, JAMAIS ESSAYÉ PAR MOI-MEME : PRENDRE UN RASPBERRY PI (le + simple) ET TEST !! (DMD à AE il doit en avoir))
 Pour héberger sur un serveur dédié (ex: Serveur Linux ou Raspberry Pi) :
 1. Installez MySQL sur le serveur : `sudo apt install mysql-server`. (Si vous utilisez Debian/Ubuntu)
 2. Autorisez les connexions distantes en modifiant le fichier de configuration (souvent `/etc/mysql/mysql.conf.d/mysqld.cnf`) : changez `bind-address = 127.0.0.1` en `bind-address = 0.0.0.0`.
