@@ -47,11 +47,7 @@ class ConfirmRentPage(ctk.CTkFrame):
         self.motif_entry = ctk.CTkEntry(self.right_frame, width=300, placeholder_text="Ex: TP Électronique, Projet 2A...")
         self.motif_entry.pack(padx=20, pady=(5, 15))
 
-        # Date de retour prévue
-        # Note: Sans tkcalendar, on utilise un champ texte simple avec validation basique
-        ctk.CTkLabel(self.right_frame, text="Date de retour prévue (JJ/MM/AAAA) :", font=("Helvetica", 14)).pack(anchor="w", padx=20, pady=(10, 0))
-        self.date_entry = ctk.CTkEntry(self.right_frame, width=300, placeholder_text=datetime.now().strftime("%d/%m/%Y"))
-        self.date_entry.pack(padx=20, pady=(5, 20))
+
 
         # Boutons
         self.btn_confirm = ctk.CTkButton(
@@ -110,18 +106,13 @@ class ConfirmRentPage(ctk.CTkFrame):
             return
 
         motif = self.motif_entry.get().strip()
-        date_fin = self.date_entry.get().strip()
 
         if not motif:
             messagebox.showwarning("Champs manquants", "Veuillez indiquer un motif.")
             return
         
-        if not date_fin:
-            messagebox.showwarning("Champs manquants", "Veuillez indiquer une date de retour.")
-            return
-
         # Construction du motif complet pour la BDD (puisque la BDD Emprunt n'a pas de colonne date_fin explicite)
-        motif_complet = f"{motif} [Retour prévu: {date_fin}]"
+        motif_complet = motif
         date_emprunt = datetime.now().strftime("%d_%m_%Y") # Format compatible BDD existante
 
         success_count = 0
@@ -131,7 +122,8 @@ class ConfirmRentPage(ctk.CTkFrame):
                     motif=motif_complet,
                     date_emprunt=date_emprunt,
                     id_exemplaire=item['id_exemplaire'],
-                    id_personnel=user['id_personnel']
+                    id_personnel=user['id_personnel'],
+                    date_rendu= NULL
                 )
                 success_count += 1
             
@@ -141,7 +133,6 @@ class ConfirmRentPage(ctk.CTkFrame):
             
             # Nettoyer les champs
             self.motif_entry.delete(0, 'end')
-            self.date_entry.delete(0, 'end')
             
             self.controller.show_page("MainPage")
 

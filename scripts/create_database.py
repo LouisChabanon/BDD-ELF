@@ -43,12 +43,15 @@ try:
     db_cursor = db_connection.cursor()
 
     # 3. Table Creation
+    #Suppression de l'ancienne base et création d'une nouvelle table
+    db_cursor.execute("DROP DATABASE IF EXISTS Inventaire_PJT")
+    db_cursor.execute("CREATE DATABASE Inventaire_PJT")
+    db_connection.close()
+
+
+
+
     table_queries = [
-        """
-        CREATE TABLE IF NOT EXISTS Notice(
-            notice_materiel VARCHAR(100) PRIMARY KEY
-        )
-        """,
         """
         CREATE TABLE IF NOT EXISTS Personnel(
             id_personnel INT PRIMARY KEY,
@@ -97,7 +100,8 @@ try:
             id_personnel INT,
             id_exemplaire INT,
             FOREIGN KEY (id_personnel) REFERENCES Personnel(id_personnel),
-            FOREIGN KEY (id_exemplaire) REFERENCES Exemplaire(id_exemplaire)
+            FOREIGN KEY (id_exemplaire) REFERENCES Exemplaire(id_exemplaire),
+            date_rendu TEXT
         )
         """,
         """
@@ -124,6 +128,7 @@ try:
     
     print("Updating tables structure...")
     execute_queries(db_cursor, table_queries)
+    
     
     print("Seeding data (skipping duplicates)...")
     
@@ -230,7 +235,7 @@ try:
         print(f"  -> Reservations checked/added.")
 
         # 8. Emprunt
-        query_emp = "INSERT IGNORE INTO Emprunt (motif, date_emprunt, id_exemplaire, id_personnel) VALUES (%s, %s, %s, %s)"
+        query_emp = "INSERT IGNORE INTO Emprunt (motif, date_emprunt, id_exemplaire, id_personnel, date_rendu) VALUES (%s, %s, %s, %s)"
         data_emp = [
             ("J'invite des amis", '05_12_2025', 10002, 94165) 
         ]

@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from utils.session import add_to_cart
-from components.scan_popup import RentValidationPopup
+from components.scan_popup import ReturnValidationPopup
 import threading
 import os
 import io
@@ -15,7 +15,7 @@ SAMBA_SRV = os.getenv("SAMBA_SRV")
 SAMBA_USER = os.getenv("SAMBA_USER")
 SAMBA_PASSWORD = os.getenv("SAMBA_PASSWORD")
 
-class ProductCard(ctk.CTkFrame):
+class BorrowedProductCard(ctk.CTkFrame):
     def __init__(self, parent, controller, product: dict):
         super().__init__(parent)
         self.controller = controller
@@ -81,11 +81,11 @@ class ProductCard(ctk.CTkFrame):
         )
         self.btn_see.pack(side="left", padx=5)
 
-        # BOUTON EMPRUNTER
+        # BOUTON RENDRE
         # On ne définit pas 'state' ici, car il dépend du stock
         self.btn_rent = ctk.CTkButton(
             self.btn_frame,
-            text="Emprunter",
+            text="Rendre",
             fg_color="#B17457",
             hover_color="#9C6049",
             width=100,
@@ -112,15 +112,12 @@ class ProductCard(ctk.CTkFrame):
         if self.stock_count > 0:
             stock_color = "green"
             stock_text = f"✅ {self.stock_count} disponible(s)"
-            button_state = "normal"  # On active le bouton
         else:
             stock_color = "red"
             stock_text = "❌ Rupture de stock"
-            button_state = "disabled" # On désactive le bouton
 
         # On APPLIQUE les changements aux widgets qui existent déjà dans le __init__
         self.lbl_stock.configure(text=stock_text, text_color=stock_color)
-        self.btn_rent.configure(state=button_state)
 
     def load_image_thread(self):
         """Télécharge l'image depuis le serveur Samba sans bloquer l'UI"""
@@ -163,7 +160,7 @@ class ProductCard(ctk.CTkFrame):
 
     def initiate_rent(self):
         """Ouvre la popup de scan pour valider l'emprunt"""
-        RentValidationPopup(self, self.nom, self.confirm_rent)
+        ReturnValidationPopup(self, self.nom, self.confirm_rent)
 
     def confirm_rent(self, item):
         """Action déclenchée après validation du scan dans la popup"""

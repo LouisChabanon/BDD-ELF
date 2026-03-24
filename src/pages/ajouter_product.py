@@ -42,6 +42,8 @@ class AjouterObjetPage(ctk.CTkFrame):
             command=lambda: controller.show_page("AjouterExemplairePage")
         ).pack(pady=10)
 
+    
+
 
 #Ajouter un matériel
 
@@ -102,10 +104,10 @@ class AjouterMaterielPage(ctk.CTkFrame):
 
         ctk.CTkButton(actions, text="💾 Ajouter le matériel",
                       font=("Helvetica", 16, "bold"),
-                      command=self.save_material).pack(side="left", padx=10)
+                      command=self.save_material).pack(side="right", padx=10)
 
         ctk.CTkButton(actions, text="Annuler",
-                      command=lambda: controller.show_page("AjouterObjetPage")).pack(side="right", padx=10)
+                      command=lambda: controller.show_page("AjouterObjetPage")).pack(side="left", padx=10)
 
     # --------------------------------------------------------------------
     def load_rangements(self):
@@ -145,17 +147,21 @@ class AjouterMaterielPage(ctk.CTkFrame):
         }
 
         try:
-            create_materiel(data)
+            create_materiel(nom, photo, freq, notice)
         except Exception as e:
-            self.popup("Erreur", f"Impossible d'ajouter le matériel :\n{e}")
+            self.popup("Erreur", f"Impossible d'ajouter le matériel, vérifie tes arguments :\n{e}")
             return
 
-        # popup de succès
+       # popup de succès
         self.popup(
             "Succès",
             f"Le matériel '{nom}' a été ajouté avec succès.\n\n"
             "Vous pouvez maintenant ajouter un exemplaire si nécessaire."
         )
+
+    def close_popup_and_return(self, popup):
+        popup.destroy()
+        self.controller.show_page("AjouterObjetPage")
 
     # --------------------------------------------------------------------
     def popup(self, title, msg):
@@ -170,8 +176,7 @@ class AjouterMaterielPage(ctk.CTkFrame):
         frame.pack(expand=True)
 
         ctk.CTkLabel(frame, text=msg, font=("Helvetica", 14), justify="left").pack(pady=20)
-        ctk.CTkButton(frame, text="OK", command=p.destroy).pack(pady=10)
-
+        ctk.CTkButton(frame,text="OK",command=lambda: self.close_popup_and_return(p)).pack(pady=10)
 
 # Ajouter un exemplaire
 
@@ -235,10 +240,10 @@ class AjouterExemplairePage(ctk.CTkFrame):
 
         ctk.CTkButton(actions, text="💾 Ajouter l’exemplaire",
                       font=("Helvetica", 16, "bold"),
-                      command=self.save_exemplaire).pack(side="left", padx=10)
+                      command=self.save_exemplaire).pack(side="right", padx=10)
 
         ctk.CTkButton(actions, text="Annuler",
-                      command=lambda: controller.show_page("AjouterObjetPage")).pack(side="right", padx=10)
+                      command=lambda: controller.show_page("AjouterObjetPage")).pack(side="left", padx=10)
 
     # --------------------------------------------------------------------
     def load_materiels(self):
@@ -278,12 +283,16 @@ class AjouterExemplairePage(ctk.CTkFrame):
         }
 
         try:
-            create_exemplaire(data)
+            create_exemplaire(id_val,self.garantie_entry.get().strip(),self.entretien_entry.get().strip(),self.loc_entry.get().strip() or lieu, nom_mat )
         except Exception as e:
             self.popup("Erreur", f"Impossible d'ajouter l'exemplaire :\n{e}")
             return
 
         self.popup("Succès", f"L'exemplaire {id_val} a été ajouté au matériel '{nom_mat}'.")
+
+    def close_popup_and_return(self, popup):
+        popup.destroy()
+        self.controller.show_page("MainPage")
 
     # --------------------------------------------------------------------
     def popup(self, title, msg):
@@ -296,4 +305,4 @@ class AjouterExemplairePage(ctk.CTkFrame):
         frame.pack(expand=True)
 
         ctk.CTkLabel(frame, text=msg, font=("Helvetica", 14), justify="left").pack(pady=20)
-        ctk.CTkButton(frame, text="OK", command=p.destroy).pack(pady=10)
+        ctk.CTkButton(frame,text="OK",command=lambda: self.close_popup_and_return(p)).pack(pady=10)

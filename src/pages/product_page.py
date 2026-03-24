@@ -11,20 +11,20 @@ class ProductPage(ctk.CTkFrame):
         super().__init__(parent)
         self.controller = controller
         self.product_name = None
+        self.pdf_path = None
         self.configure(fg_color="#F9F7F0")
 
         self.bandeau = Band_sup(self, controller)
         self.bandeau.pack(fill="x", side="top")
 
-        # Scrollable Area
         self.scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.scroll_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-        # Header Info Section
+        # HEADER SECTION
         self.header_frame = ctk.CTkFrame(self.scroll_frame, fg_color="white", corner_radius=10)
         self.header_frame.pack(fill="x", pady=(0, 20))
         
-        self.img_label = ctk.CTkLabel(self.header_frame, text="[IMAGE]", width=100, height=100, fg_color="#eee")
+        self.img_label = ctk.CTkLabel(self.header_frame, text="📷", width=100, height=100, fg_color="#eee")
         self.img_label.pack(side="left", padx=20, pady=20)
         
         self.info_container = ctk.CTkFrame(self.header_frame, fg_color="transparent")
@@ -39,10 +39,20 @@ class ProductPage(ctk.CTkFrame):
         self.btn_pdf = ctk.CTkButton(self.info_container, text="📄 Notice PDF", width=100, command=self.open_pdf)
         self.btn_pdf.pack(anchor="w", pady=5)
 
-        self.btn_back = ctk.CTkButton(self.header_frame, text="Retour", fg_color="gray", width=100, command=lambda: controller.show_page("MainPage"))
-        self.btn_back.pack(side="right", padx=20, anchor="n", pady=20)
+        # RENT BUTTON 
+        self.btn_rent = ctk.CTkButton(
+            self.header_frame, 
+            text="Emprunter ce produit", 
+            fg_color="#B17457",
+            hover_color="#9C6049",
+            width=150,
+            height=40,
+            font=("Helvetica", 14, "bold"),
+            command=self.initiate_rent_product
+        )
+        self.btn_rent.pack(side="right", padx=20)
 
-        # List Section
+        # LIST SECTION
         self.list_container = ctk.CTkFrame(self.scroll_frame, fg_color="transparent")
         self.list_container.pack(fill="x")
 
@@ -74,103 +84,47 @@ class ProductPage(ctk.CTkFrame):
         items = get_exemplaires_with_status(self.product_name)
         
         if not items:
-            ctk.CTkLabel(self.list_container, text="Aucun stock.").pack(pady=20)
+            self.btn_rent.configure(state="disabled") # Désactive si aucun stock du tout
+            ctk.CTkLabel(self.list_container, text="Aucun exemplaire répertorié.").pack(pady=20)
             return
+
+        # Vérifier si au moins un exemplaire est dispo pour activer le bouton rent
+        any_available = any(item['is_available'] for item in items)
+        self.btn_rent.configure(state="normal" if any_available else "disabled")
 
         for item in items:
             row = ctk.CTkFrame(self.list_container, fg_color="white", corner_radius=5)
             row.pack(fill="x", pady=2)
             
-            # --- Informations de l'exemplaire ---
             ctk.CTkLabel(row, text=f"#{item['id_exemplaire']}", font=("Courier", 14, "bold"), width=80).pack(side="left", padx=10, pady=10)
-            ctk.CTkLabel(row, text=item.get('lieu_rangement', 'N/A'), width=120).pack(side="left", padx=10)
+            ctk.CTkLabel(row, text=item.get('lieu_rangement', 'N/A'), width=150).pack(side="left", padx=10)
             
             is_avail = item['is_available']
             status_text = "DISPONIBLE" if is_avail else "EMPRUNTÉ"
             status_color = "#8FBC8F" if is_avail else "#C94C3E"
             
-            ctk.CTkLabel(row, text=status_text, text_color=status_color, font=("Helvetica", 12, "bold"), width=100).pack(side="left", padx=10)
+            ctk.CTkLabel(row, text=status_text, text_color=status_color, font=("Helvetica", 12, "bold")).pack(side="left", padx=20)
 
-            # --- Groupe de boutons d'action ---
-
-            # 1. Bouton Historique (Ouvre product_history_page)
-            # Note : On utilise une fonction intermédiaire pour passer l'ID si nécessaire
-            ctk.CTkButton(
-                row, 
-                text="Historique", 
-                fg_color="#B17457", 
-                width=100,
-                command=lambda i=item['id_exemplaire']: self.go_to_history(i)
-            ).pack(side="right", padx=5)
-
-            # 2. Bouton Réserver (Ouvre reserve_product)
-            ctk.CTkButton(
-                row, 
-                text="Réserver", 
-                fg_color="#B17457", 
-                width=100,
-                command=lambda i=item['id_exemplaire']: self.go_to_reserve(i)
-            ).pack(side="right", padx=5)
-
-            # 3. Bouton Emprunter (Ajouter au panier)
-            btn_emprunter = ctk.CTkButton(
-                row, 
-                text="Emprunter", 
-                width=100,
-                fg_color="#B17457",
-                hover_color="#8c5a44",
-                command=lambda i=item: self.initiate_add_to_cart(i)
-            )
-            btn_emprunter.pack(side="right", padx=5)
-
-            if not is_avail:
-                btn_emprunter.configure(
-                    state="normal",        # Reste en 'normal' pour garder le texte bien noir
-                    fg_color="#a59f93",    
-                    text_color="#D8D2C2",  
-                    hover=False,           
-                    command=lambda: None   # Écrase la commande : cliquer ne fait plus rien
-                )
-
-    # Nouvelles méthodes de navigation
-    def go_to_history(self, exemplaire_id):
-        # Si votre controller a une méthode pour stocker l'ID de l'objet sélectionné
-        if hasattr(self.controller, "shared_data"):
-            self.controller.shared_data["selected_exemplaire"] = exemplaire_id
-        self.controller.show_page("product_history_page")
-
-    def go_to_reserve(self, exemplaire_id):
-        if hasattr(self.controller, "shared_data"):
-            self.controller.shared_data["selected_exemplaire"] = exemplaire_id
-        self.controller.show_page("reserve_product")
-
-    def initiate_add_to_cart(self, item):
-        # This opens the modal. The item is ONLY added if the modal succeeds.
-        RentValidationPopup(self, item['id_exemplaire'], lambda: self.confirm_add_to_cart(item))
-
-    def confirm_add_to_cart(self, item):
-        item['nom_materiel'] = self.product_name 
+    def confirm_rent_product(self, item):
+        """
+        Action déclenchée après validation du scan dans la popup.
+        'item' est ici la valeur retournée par la popup (ex: l'identifiant scanné).
+        """
+        # 1. Ajoute au panier
+        # Note: on s'assure d'envoyer la donnée reçue par la popup
         add_to_cart(item)
-        messagebox.showinfo("Succès", f"Exemplaire #{item['id_exemplaire']} ajouté au panier.")
+        
+        # 2. Feedback 
+        messagebox.showinfo("Succès", f"Ajouté au panier : {item}")
 
-    def handle_spontaneous_scan(self, event):
-        code = self.search_entry.get().strip()
-        if not code:
-            return
+        # 3. Retour à la page principale 
+        self.controller.show_page("MainPage")
 
-        # 1. Check if it matches a generic product name
-        details = get_product_details(code) # Attempt by name
-        if details:
-            self.set_product_name(details['nom_materiel'])
-            return
-
-        name_from_id = get_product_name_by_exemplaire_id(code)
-        if name_from_id:
-            # Redirect to that page
-            self.set_product_name(name_from_id)
-            # Optional: Highlight the specific row? For now, just showing the list is sufficient per prompt.
-        else:
-            messagebox.showerror("Erreur", f"Aucun produit ou exemplaire trouvé pour : {code}")
+    def initiate_rent_product(self):
+        """Ouvre la popup de scan pour valider l'emprunt"""
+        # On passe self.product_name comme référence pour le scan
+        RentValidationPopup(self, self.product_name, self.confirm_rent_product)
 
     def open_pdf(self):
-        if self.pdf_path: webbrowser.open_new(self.pdf_path)
+        if self.pdf_path: 
+            webbrowser.open_new(self.pdf_path)
