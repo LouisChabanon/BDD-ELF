@@ -39,9 +39,6 @@ class ProductPage(ctk.CTkFrame):
         self.btn_pdf = ctk.CTkButton(self.info_container, text="📄 Notice PDF", width=100, command=self.open_pdf)
         self.btn_pdf.pack(anchor="w", pady=5)
 
-        self.btn_back = ctk.CTkButton(self.header_frame, text="Retour", fg_color="gray", width=100, command=lambda: controller.show_page("MainPage"))
-        self.btn_back.pack(side="right", padx=20, anchor="n", pady=20)
-
         # List Section
         self.list_container = ctk.CTkFrame(self.scroll_frame, fg_color="transparent")
         self.list_container.pack(fill="x")
@@ -92,7 +89,7 @@ class ProductPage(ctk.CTkFrame):
             ctk.CTkLabel(row, text=status_text, text_color=status_color, font=("Helvetica", 12, "bold"), width=100).pack(side="left", padx=10)
 
             # --- Groupe de boutons d'action ---
-
+            """
             # 1. Bouton Historique (Ouvre product_history_page)
             # Note : On utilise une fonction intermédiaire pour passer l'ID si nécessaire
             ctk.CTkButton(
@@ -111,7 +108,7 @@ class ProductPage(ctk.CTkFrame):
                 width=100,
                 command=lambda i=item['id_exemplaire']: self.go_to_reserve(i)
             ).pack(side="right", padx=5)
-
+            """
             # 3. Bouton Emprunter (Ajouter au panier)
             btn_emprunter = ctk.CTkButton(
                 row, 
