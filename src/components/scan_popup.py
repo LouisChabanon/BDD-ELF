@@ -108,7 +108,7 @@ class ReturnValidationPopup(ctk.CTkToplevel):
 
     def validate(self, event=None):
         """Méthode déclenchée quand on appuie sur Entrée ou sur le bouton."""
-        code_barre = self.username_entry.get().strip()
+        code_barre = self.entry.get().strip()
 
         if not code_barre:
             self.error_label.configure(text="Veuillez scanner ou saisir un code barre.")

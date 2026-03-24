@@ -45,6 +45,9 @@ try:
     # 3. Table Creation
     table_queries = [
         """
+        DROP DATABASE Inventaire_PJT;
+        """,
+        """
         CREATE TABLE IF NOT EXISTS Notice(
             notice_materiel VARCHAR(100) PRIMARY KEY
         )
