@@ -234,7 +234,7 @@ try:
         print(f"  -> Reservations checked/added.")
 
         # 8. Emprunt
-        query_emp = "INSERT IGNORE INTO Emprunt (motif, date_emprunt, id_exemplaire, id_personnel) VALUES (%s, %s, %s, %s)"
+        query_emp = "INSERT IGNORE INTO Emprunt (motif, date_emprunt, id_exemplaire, id_personnel, date_rendu) VALUES (%s, %s, %s, %s)"
         data_emp = [
             ("J'invite des amis", '05_12_2025', 10002, 94165) 
         ]
