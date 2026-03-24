@@ -29,6 +29,27 @@ def execute_query(query, params=None, fetch_one=False, fetch_all=False, is_commi
     finally:
         cursor.close()
 
+def get_currently_borrowed_items():
+    """
+    Récupère tous les exemplaires actuellement empruntés (non rendus),
+    avec les informations de l'emprunteur, triés par nom de famille.
+    """
+    query = """
+        SELECT 
+            p.nom, 
+            p.prenom, 
+            e.nom_materiel, 
+            ex.id_exemplaire, 
+            em.date_emprunt,
+            em.motif
+        FROM Emprunt em
+        JOIN Personnel p ON em.id_personnel = p.id_personnel
+        JOIN Exemplaire ex ON em.id_exemplaire = ex.id_exemplaire
+        WHERE em.date_rendu IS NULL
+        ORDER BY p.nom ASC, p.prenom ASC
+    """
+    return execute_query(query, fetch_all=True, dictionary_cursor=True)
+
 def get_all_materiels_with_stock():
     query = """
         SELECT 

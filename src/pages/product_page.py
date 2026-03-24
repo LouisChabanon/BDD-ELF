@@ -20,7 +20,7 @@ class ProductPage(ctk.CTkFrame):
         self.scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.scroll_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-        # --- HEADER SECTION ---
+        # HEADER SECTION
         self.header_frame = ctk.CTkFrame(self.scroll_frame, fg_color="white", corner_radius=10)
         self.header_frame.pack(fill="x", pady=(0, 20))
         
@@ -39,7 +39,7 @@ class ProductPage(ctk.CTkFrame):
         self.btn_pdf = ctk.CTkButton(self.info_container, text="📄 Notice PDF", width=100, command=self.open_pdf)
         self.btn_pdf.pack(anchor="w", pady=5)
 
-        # --- RENT BUTTON ---
+        # RENT BUTTON 
         self.btn_rent = ctk.CTkButton(
             self.header_frame, 
             text="Emprunter ce produit", 
@@ -48,11 +48,11 @@ class ProductPage(ctk.CTkFrame):
             width=150,
             height=40,
             font=("Helvetica", 14, "bold"),
-            command=self.initiate_rent
+            command=self.initiate_rent_product
         )
         self.btn_rent.pack(side="right", padx=20)
 
-        # List Section
+        # LIST SECTION
         self.list_container = ctk.CTkFrame(self.scroll_frame, fg_color="transparent")
         self.list_container.pack(fill="x")
 
@@ -88,7 +88,7 @@ class ProductPage(ctk.CTkFrame):
             ctk.CTkLabel(self.list_container, text="Aucun exemplaire répertorié.").pack(pady=20)
             return
 
-        # Vérifier si au moins un exemplaire est dispo pour activer le bouton global
+        # Vérifier si au moins un exemplaire est dispo pour activer le bouton rent
         any_available = any(item['is_available'] for item in items)
         self.btn_rent.configure(state="normal" if any_available else "disabled")
 
@@ -104,9 +104,8 @@ class ProductPage(ctk.CTkFrame):
             status_color = "#8FBC8F" if is_avail else "#C94C3E"
             
             ctk.CTkLabel(row, text=status_text, text_color=status_color, font=("Helvetica", 12, "bold")).pack(side="left", padx=20)
-            # NOTE : Les boutons individuels ont été supprimés ici pour nettoyer la vue.
 
-    def confirm_rent(self, item):
+    def confirm_rent_product(self, item):
         """
         Action déclenchée après validation du scan dans la popup.
         'item' est ici la valeur retournée par la popup (ex: l'identifiant scanné).
@@ -121,10 +120,10 @@ class ProductPage(ctk.CTkFrame):
         # 3. Retour à la page principale 
         self.controller.show_page("MainPage")
 
-    def initiate_rent(self):
+    def initiate_rent_product(self):
         """Ouvre la popup de scan pour valider l'emprunt"""
         # On passe self.product_name comme référence pour le scan
-        RentValidationPopup(self, self.product_name, self.confirm_rent)
+        RentValidationPopup(self, self.product_name, self.confirm_rent_product)
 
     def open_pdf(self):
         if self.pdf_path: 
