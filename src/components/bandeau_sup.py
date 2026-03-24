@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from utils.session import get_session
+from database.queries import get_currently_borrowed_items
 
 class Band_sup(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -37,6 +38,14 @@ class Band_sup(ctk.CTkFrame):
             command=self.return_page,
         )
         self.return_button.grid(row=0, column=2, sticky="e", padx=20, pady=10)
+
+        # Bouton "Emprunts actuels"
+        self.current_loans_button = ctk.CTkButton(
+            self,
+            text="Emprunts actuels",
+            command=self.get_currently_borrowed_items()
+        )
+        self.current_loans_button.grid(row=0, column=2, sticky="e", padx=20, pady=10)
 
     def refresh(self, args=None):
         """Met à jour le bouton utilisateur ou connexion."""
