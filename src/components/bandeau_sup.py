@@ -43,7 +43,7 @@ class Band_sup(ctk.CTkFrame):
         self.current_loans_button = ctk.CTkButton(
             self,
             text="Emprunts actuels",
-            command=self.get_currently_borrowed_items()
+            command=get_currently_borrowed_items
         )
         self.current_loans_button.grid(row=0, column=2, sticky="e", padx=20, pady=10)
 
