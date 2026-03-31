@@ -100,7 +100,7 @@ class BorrowedProductCard(ctk.CTkFrame):
             fg_color="#B17457",
             hover_color="#9C6049",
             width=100,
-            command=lambda: controller.show_page("MainPage")
+            command=lambda: controller.show_page("ReturnPage")
         )
         self.btn_rent.pack(side="left", padx=5)
 
