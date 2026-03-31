@@ -408,6 +408,7 @@ def get_borrowed_items(user_id):
         JOIN Materiel m ON ex.nom_materiel = m.nom_materiel
         JOIN Personnel p ON em.id_personnel = p.id_personnel
         WHERE em.id_personnel = %s
+        AND em.date_rendu IS NULL
         ORDER BY em.date_emprunt DESC
     """
     result = execute_query(

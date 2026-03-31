@@ -15,6 +15,7 @@ class Band_sup(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=0)
+        self.grid_columnconfigure(3, weight=0)
 
         self.user_button = None
 
@@ -37,7 +38,7 @@ class Band_sup(ctk.CTkFrame):
             text="Rendre", 
             command=self.return_page,
         )
-        self.return_button.grid(row=0, column=2, sticky="e", padx=20, pady=10)
+        self.return_button.grid(row=0, column=2, sticky="e", padx=10, pady=10)
 
         # Bouton "Emprunts actuels"
         self.current_loans_button = ctk.CTkButton(
@@ -45,7 +46,7 @@ class Band_sup(ctk.CTkFrame):
             text="Emprunts actuels",
             command=get_currently_borrowed_items
         )
-        self.current_loans_button.grid(row=0, column=2, sticky="e", padx=20, pady=10)
+        self.current_loans_button.grid(row=0, column=3, sticky="e", padx=10, pady=10)
 
     def refresh(self, args=None):
         """Met à jour le bouton utilisateur ou connexion."""
@@ -55,7 +56,7 @@ class Band_sup(ctk.CTkFrame):
         self.user = get_session()
 
         if self.user:
-            self.home_button.grid(row=0, column=3, sticky="e", padx=10, pady=10)
+            self.home_button.grid(row=0, column=4, sticky="e", padx=10, pady=10)
         else:
             self.home_button.grid_forget()
 
