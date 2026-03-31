@@ -45,6 +45,7 @@ def get_currently_borrowed_items():
         FROM Emprunt em
         JOIN Personnel p ON em.id_personnel = p.id_personnel
         JOIN Exemplaire ex ON em.id_exemplaire = ex.id_exemplaire
+        JOIN Materiel m ON ex.nom_materiel = m.nom_materiel
         WHERE em.date_rendu IS NULL
         ORDER BY p.nom ASC, p.prenom ASC
     """
@@ -399,10 +400,13 @@ def get_borrowed_items(user_id):
             em.id_emprunt,
             m.nom_materiel,
             em.date_emprunt,
-            ex.id_exemplaire
+            ex.id_exemplaire,
+            p.nom,
+            p.prenom
         FROM Emprunt em
         JOIN Exemplaire ex ON em.id_exemplaire = ex.id_exemplaire
         JOIN Materiel m ON ex.nom_materiel = m.nom_materiel
+        JOIN Personnel p ON em.id_personnel = p.id_personnel
         WHERE em.id_personnel = %s
         ORDER BY em.date_emprunt DESC
     """
