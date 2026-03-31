@@ -38,7 +38,7 @@ def get_currently_borrowed_items():
         SELECT 
             p.nom, 
             p.prenom, 
-            e.nom_materiel, 
+            m.nom_materiel, 
             ex.id_exemplaire, 
             em.date_emprunt,
             em.motif

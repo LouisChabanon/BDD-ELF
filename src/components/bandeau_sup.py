@@ -1,6 +1,5 @@
 import customtkinter as ctk
 from utils.session import get_session
-from database.queries import get_currently_borrowed_items
 
 class Band_sup(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -16,6 +15,7 @@ class Band_sup(ctk.CTkFrame):
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=0)
         self.grid_columnconfigure(3, weight=0)
+        self.grid_columnconfigure(4, weight=0)
 
         self.user_button = None
 
@@ -43,8 +43,8 @@ class Band_sup(ctk.CTkFrame):
         # Bouton "Emprunts actuels"
         self.current_loans_button = ctk.CTkButton(
             self,
-            text="Emprunts actuels",
-            command=get_currently_borrowed_items
+            text="Voir tous les emprunts",
+            command=lambda: self.controller.show_page("CurrentLoansPage")
         )
         self.current_loans_button.grid(row=0, column=3, sticky="e", padx=10, pady=10)
 
