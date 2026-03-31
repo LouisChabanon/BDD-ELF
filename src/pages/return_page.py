@@ -41,7 +41,7 @@ class ReturnPage(ctk.CTkFrame):
 
         self.username_entry.focus_set()
 
-    # 🟢 Ajout de la méthode login
+    # Ajout de la méthode login
     def login(self, event=None):
         """Méthode déclenchée quand on appuie sur Entrée ou sur le bouton."""
         code_barre = self.username_entry.get().strip()

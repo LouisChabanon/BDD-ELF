@@ -1,6 +1,5 @@
 import customtkinter as ctk
 import webbrowser
-# Suppression de messagebox (plus nécessaire)
 from components.bandeau_sup import Band_sup
 from components.scan_popup import RentValidationPopup
 from database.queries import get_product_details, get_exemplaires_with_status, get_product_name_by_exemplaire_id
@@ -55,7 +54,7 @@ class ProductPage(ctk.CTkFrame):
         )
         self.btn_rent.pack(pady=(0, 5))
 
-        # NOUVEAU : Label pour le message de confirmation direct
+        # Label pour le message de confirmation direct
         self.info_label = ctk.CTkLabel(
             self.loan_action_frame, 
             text="", 
