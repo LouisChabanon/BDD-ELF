@@ -1,4 +1,7 @@
 import customtkinter as ctk
+import threading
+import cv2
+from pyzbar import pyzbar
 from database.queries import get_user_by_id
 from database.queries import return_product
 
@@ -30,6 +33,9 @@ class RentValidationPopup(ctk.CTkToplevel):
             text="Veuillez scanner le code-barre de l'exemplaire\nque vous avez en main pour confirmer.", 
             font=("Helvetica", 14)
         ).pack(pady=5)
+
+        #test utilisation du scann de la caméra
+        ctk.CTkButton(self,text="Scanner avec la caméra",command=self.start_scanner).pack(pady=10)
         
         self.entry = ctk.CTkEntry(self, placeholder_text="Scanner l'exemplaire ici...", width=300)
         self.entry.pack(pady=15)
@@ -67,6 +73,47 @@ class RentValidationPopup(ctk.CTkToplevel):
         }
         self.on_success(item)
         self.destroy()
+
+    def start_scanner(self):
+        thread = threading.Thread(target=self.scan_barcode)
+        thread.daemon = True
+        thread.start()
+    
+    def scan_barcode(self):
+        cap = cv2.VideoCapture(0)
+
+        scanned = None
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            barcodes = pyzbar.decode(frame)
+
+            for barcode in barcodes:
+                scanned = barcode.data.decode("utf-8")
+                
+                # Dès qu'on a un code → on arrête
+                cap.release()
+                cv2.destroyAllWindows()
+
+                # ⚠️ IMPORTANT : interaction avec Tkinter = via after()
+                self.after(0, lambda: self.fill_and_validate(scanned))
+                return
+
+            cv2.imshow("Scanner", frame)
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        cap.release()
+        cv2.destroyAllWindows()
+
+    def fill_and_validate(self, code):
+        self.entry.delete(0, 'end')
+        self.entry.insert(0, code)
+        self.validate()
 
 class ReturnValidationPopup(ctk.CTkToplevel):
     def __init__(self, parent, product_name, on_success_callback):

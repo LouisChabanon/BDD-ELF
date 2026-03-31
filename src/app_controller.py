@@ -12,6 +12,7 @@ from pages.ajouter_product import AjouterObjetPage
 from pages.ajouter_product import AjouterExemplairePage
 from pages.return_page import ReturnPage
 from pages.confirm_rent_page import ConfirmRentPage
+from pages.CurrentLoansPage import CurrentLoansPage
 import dotenv
 import os
 import threading
@@ -74,7 +75,7 @@ class AppController(ctk.CTk):
         self.pages["ReturnPage"] = ReturnPage(self.container, self)
         self.pages["ConfirmRentPage"] = ConfirmRentPage(self.container, self)
         self.pages["EmpruntsPage"]= SeeLoanPage(self.container, self)
-
+        self.pages["CurrentLoansPage"] = CurrentLoansPage(self.container, self)
 
         for page in self.pages.values():
             page.place(relx=0, rely=0, relwidth=1, relheight=1)
