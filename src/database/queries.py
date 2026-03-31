@@ -309,8 +309,8 @@ def add_matos(nom_materiel, photo_materiel, frequence_entretient, notice_materie
     params = (nom_materiel, photo_materiel, frequence_entretient, notice_materiel)
     return execute_query(query, params, is_commit=True)
  
-def add_loan(motif, date_emprunt, id_exemplaire, id_personnel, date_rendu):
-    query = "INSERT INTO Emprunt (motif, date_emprunt, id_exemplaire, id_personnel, date_rendu) VALUES (%s, %s, %s, %s)"
+def add_loan(motif, date_emprunt, id_exemplaire, id_personnel, date_rendu=None):
+    query = "INSERT INTO Emprunt (motif, date_emprunt, id_exemplaire, id_personnel, date_rendu) VALUES (%s, %s, %s, %s, %s)"
     params = (motif, date_emprunt, id_exemplaire, id_personnel, date_rendu)
     return execute_query(query, params, is_commit=True)
     

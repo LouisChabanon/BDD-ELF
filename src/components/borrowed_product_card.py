@@ -21,25 +21,37 @@ class BorrowedProductCard(ctk.CTkFrame):
         self.controller = controller
         self.product = product
         
-        # Données de base extraites du dictionnaire 'product'
+        # Données de base
         self.nom = product.get("nom_materiel", "Inconnu")
         self.photo = product.get("photo_materiel", None)
         
-        # Stock initial (sera mis à jour par update_stock_display plus bas)
+        # Données d'emprunt (doivent venir du backend)
+        self.prenom = product.get("prenom")
+        self.nom_user = product.get("nom")
+        self.id_exemplaire = product.get("id_exemplaire")
+        self.date_rendu = product.get("date_rendu")
+        
+        # Stock (non affiché mais conservé pour compatibilité)
         self.stock_count = product.get("stock_dispo", 0)
 
-        # Configuration visuelle du cadre (Frame)
-        self.configure(corner_radius=10, border_width=1, fg_color="white", border_color="#D0D0D0", height=80)
+        # Configuration visuelle
+        self.configure(
+            corner_radius=10,
+            border_width=1,
+            fg_color="white",
+            border_color="#D0D0D0",
+            height=80
+        )
         
-        # --- CONFIGURATION DU LAYOUT (Grille à 3 colonnes) ---
-        self.grid_columnconfigure(0, weight=0) # Colonne Image
-        self.grid_columnconfigure(1, weight=1) # Colonne Infos (s'étire)
-        self.grid_columnconfigure(2, weight=0) # Colonne Boutons
+        # Layout
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=0)
 
-        # 1. WIDGET IMAGE (Vide par défaut, chargé via thread)
+        # Image
         self.img_label = ctk.CTkLabel(
             self, 
-            text="📷", 
+            text="", 
             fg_color="#F0F0F0", 
             corner_radius=5,
             width=60, 
@@ -47,7 +59,7 @@ class BorrowedProductCard(ctk.CTkFrame):
         )
         self.img_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
         
-        # 2. WIDGET TITRE
+        # Titre
         self.title_lbl = ctk.CTkLabel(
             self, 
             text=self.nom, 
@@ -56,20 +68,20 @@ class BorrowedProductCard(ctk.CTkFrame):
         )
         self.title_lbl.grid(row=0, column=1, sticky="sw", padx=(0, 10), pady=(10, 0))
 
-        # 3. WIDGET STOCK (L'élément critique qui doit changer)
-        # On crée le widget SANS texte. Le texte sera mis par update_stock_display()
+        # Zone infos (anciennement stock)
         self.lbl_stock = ctk.CTkLabel(
             self, 
             text="", 
-            font=("Helvetica", 12)
+            font=("Helvetica", 12),
+            justify="left"
         )
         self.lbl_stock.grid(row=1, column=1, sticky="nw", padx=(0, 10), pady=(0, 10))
 
-        # 4. CADRE POUR LES BOUTONS
+        # Frame boutons
         self.btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.btn_frame.grid(row=0, column=2, rowspan=2, padx=15, pady=10)
 
-        # BOUTON DETAILS
+        # Bouton fiche produit
         self.btn_see = ctk.CTkButton(
             self.btn_frame,
             text="Fiche Produit",
@@ -81,43 +93,45 @@ class BorrowedProductCard(ctk.CTkFrame):
         )
         self.btn_see.pack(side="left", padx=5)
 
-        # BOUTON RENDRE
-        # On ne définit pas 'state' ici, car il dépend du stock
+        # Bouton rendre
         self.btn_rent = ctk.CTkButton(
             self.btn_frame,
             text="Rendre",
             fg_color="#B17457",
             hover_color="#9C6049",
             width=100,
-            command=self.initiate_rent
+            command=lambda: controller.show_page("ReturnPage")
         )
         self.btn_rent.pack(side="left", padx=5)
 
-        # --- INITIALISATION DE L'AFFICHAGE ---
-        # On appelle notre fonction magique pour afficher le stock correct dès le départ
+        # Initialisation affichage
         self.update_stock_display(self.stock_count)
 
-        # Lancement du chargement de l'image en arrière-plan (pour ne pas figer l'interface)
+        # Chargement image
         if self.photo and self.photo != "default":
             threading.Thread(target=self.load_image_thread, daemon=True).start()
-
+            
     def update_stock_display(self, current_stock):
         """
-        C'EST CETTE FONCTION QUI RÉSOUT TON PROBLÈME.
-        Elle peut être appelée n'importe quand pour rafraîchir la carte.
+        Affiche uniquement les infos d'emprunt
         """
-        self.stock_count = current_stock
-        
-        # Logique de décision : on définit le texte et la couleur selon le stock
-        if self.stock_count > 0:
-            stock_color = "green"
-            stock_text = f"✅ {self.stock_count} disponible(s)"
-        else:
-            stock_color = "red"
-            stock_text = "❌ Rupture de stock"
+        # Sécurisation minimale (évite crash si champ manquant)
+        prenom = self.prenom if self.prenom else "?"
+        nom = self.nom_user if self.nom_user else "?"
+        id_ex = self.id_exemplaire if self.id_exemplaire else "?"
+        date = self.date_rendu if self.date_rendu else "?"
 
-        # On APPLIQUE les changements aux widgets qui existent déjà dans le __init__
-        self.lbl_stock.configure(text=stock_text, text_color=stock_color)
+        info_text = (
+            f"Emprunté par : {prenom} {nom}\n"
+            f"ID exemplaire : {id_ex}\n"
+            f"Date de rendu : {date}"
+        )
+
+        self.lbl_stock.configure(
+            text=info_text,
+            text_color="black",
+            justify="left"
+        )
 
     def load_image_thread(self):
         """Télécharge l'image depuis le serveur Samba sans bloquer l'UI"""

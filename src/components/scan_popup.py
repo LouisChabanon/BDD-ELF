@@ -83,6 +83,7 @@ class ReturnValidationPopup(ctk.CTkToplevel):
         self.grab_set()
         
         self.configure(fg_color="#F9F7F0")
+
         
         # UI
         ctk.CTkLabel(
@@ -111,25 +112,25 @@ class ReturnValidationPopup(ctk.CTkToplevel):
         code_barre = self.entry.get().strip()
 
         if not code_barre:
-            self.error_label.configure(text="Veuillez scanner ou saisir un code barre.")
+            self.status_label.configure(text="Veuillez scanner ou saisir un code barre.")
             return
 
         try:
             success = return_product(code_barre)
 
             if success:
-                self.error_label.configure(
+                self.status_label.configure(
                     text=f"Matériel '{code_barre}' rendu avec succès ✅",
                     text_color="green"
                 )
             else:
-                self.error_label.configure(
+                self.status_label.configure(
                     text="Aucun emprunt actif trouvé pour ce matériel.",
                     text_color="maroon"
                 )
 
         except Exception as e:
-            self.error_label.configure(
+            self.status_label.configure(
                 text=f"Erreur lors du rendu : {str(e)}",
                 text_color="maroon"
             )
