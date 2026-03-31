@@ -1,6 +1,5 @@
 import customtkinter as ctk
 import webbrowser
-from tkinter import messagebox
 from components.bandeau_sup import Band_sup
 from components.scan_popup import RentValidationPopup
 from database.queries import get_product_details, get_exemplaires_with_status, get_product_name_by_exemplaire_id
@@ -39,9 +38,12 @@ class ProductPage(ctk.CTkFrame):
         self.btn_pdf = ctk.CTkButton(self.info_container, text="📄 Notice PDF", width=100, command=self.open_pdf)
         self.btn_pdf.pack(anchor="w", pady=5)
 
-        # RENT BUTTON 
+        # LOAN SECTION (Bouton + Label de succès)
+        self.loan_action_frame = ctk.CTkFrame(self.header_frame, fg_color="transparent")
+        self.loan_action_frame.pack(side="right", padx=20)
+
         self.btn_rent = ctk.CTkButton(
-            self.header_frame, 
+            self.loan_action_frame, 
             text="Emprunter ce produit", 
             fg_color="#B17457",
             hover_color="#9C6049",
@@ -50,7 +52,15 @@ class ProductPage(ctk.CTkFrame):
             font=("Helvetica", 14, "bold"),
             command=self.initiate_rent_product
         )
-        self.btn_rent.pack(side="right", padx=20)
+        self.btn_rent.pack(pady=(0, 5))
+
+        # Label pour le message de confirmation direct
+        self.info_label = ctk.CTkLabel(
+            self.loan_action_frame, 
+            text="", 
+            font=("Helvetica", 12, "bold")
+        )
+        self.info_label.pack()
 
         # LIST SECTION
         self.list_container = ctk.CTkFrame(self.scroll_frame, fg_color="transparent")
@@ -58,6 +68,7 @@ class ProductPage(ctk.CTkFrame):
 
     def set_product_name(self, name):
         self.product_name = name
+        self.info_label.configure(text="") # Réinitialise le message quand on change de produit
         self.refresh()
 
     def refresh(self):
@@ -84,11 +95,10 @@ class ProductPage(ctk.CTkFrame):
         items = get_exemplaires_with_status(self.product_name)
         
         if not items:
-            self.btn_rent.configure(state="disabled") # Désactive si aucun stock du tout
+            self.btn_rent.configure(state="disabled")
             ctk.CTkLabel(self.list_container, text="Aucun exemplaire répertorié.").pack(pady=20)
             return
 
-        # Vérifier si au moins un exemplaire est dispo pour activer le bouton rent
         any_available = any(item['is_available'] for item in items)
         self.btn_rent.configure(state="normal" if any_available else "disabled")
 
@@ -108,21 +118,22 @@ class ProductPage(ctk.CTkFrame):
     def confirm_rent_product(self, item):
         """
         Action déclenchée après validation du scan dans la popup.
-        'item' est ici la valeur retournée par la popup (ex: l'identifiant scanné).
         """
         # 1. Ajoute au panier
-        # Note: on s'assure d'envoyer la donnée reçue par la popup
         add_to_cart(item)
         
-        # 2. Feedback 
-        messagebox.showinfo("Succès", f"Ajouté au panier : {item}")
+        # 2. Feedback visuel en vert directement sur la page
+        nom_complet = item.get('nom_materiel', self.product_name)
+        self.info_label.configure(
+            text=f" {nom_complet} ajouté au panier !",
+            text_color="#27AE60"
+        )
 
-        # 3. Retour à la page principale 
-        self.controller.show_page("MainPage")
+        # 3. Retour à la page principale après 1.2 seconde pour laisser le temps de voir
+        self.after(1200, lambda: self.controller.show_page("MainPage"))
 
     def initiate_rent_product(self):
         """Ouvre la popup de scan pour valider l'emprunt"""
-        # On passe self.product_name comme référence pour le scan
         RentValidationPopup(self, self.product_name, self.confirm_rent_product)
 
     def open_pdf(self):
