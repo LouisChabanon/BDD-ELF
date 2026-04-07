@@ -134,7 +134,7 @@ class ConfirmRentPage(ctk.CTkFrame):
             # Nettoyer les champs
             self.motif_entry.delete(0, 'end')
             
-            self.controller.show_page("MainPage")
+            self.controller.show_page("LoginPage")
 
         except Exception as e:
             messagebox.showerror("Erreur BDD", f"Une erreur est survenue lors de l'enregistrement : {e}")
