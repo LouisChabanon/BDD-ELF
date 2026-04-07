@@ -149,14 +149,15 @@ class AjouterMaterielPage(ctk.CTkFrame):
         try:
             create_materiel(nom, photo, freq, notice)
         except Exception as e:
-            self.popup("Erreur", f"Impossible d'ajouter le matériel, vérifie tes arguments :\n{e}")
+            self.popup("Erreur", f"Impossible d'ajouter le matériel, vérifie tes arguments :\n{e}",is_success=False)
             return
 
        # popup de succès
         self.popup(
             "Succès",
             f"Le matériel '{nom}' a été ajouté avec succès.\n\n"
-            "Vous pouvez maintenant ajouter un exemplaire si nécessaire."
+            "Vous pouvez maintenant ajouter un exemplaire si nécessaire.",
+            is_success=True
         )
 
     def close_popup_and_return(self, popup):
@@ -164,19 +165,27 @@ class AjouterMaterielPage(ctk.CTkFrame):
         self.controller.show_page("AjouterObjetPage")
 
     # --------------------------------------------------------------------
-    def popup(self, title, msg):
+    def popup(self, title, msg, is_success):
         p = ctk.CTkToplevel(self)
         p.geometry("420x180")
         p.title(title)
         p.configure(fg_color="#F9F7F0")
 
-        Band_sup(p, self.controller).pack(fill="x", side="top")
+        p.attributes('-topmost', True)  # Force la fenêtre au-dessus de toutes les autres
+        p.focus_force()                 # Donne le focus clavier/souris au popup
+        p.grab_set()                    # Rend le popup "modal" (bloque la fenêtre arrière)
+
+        color = "green" if is_success else "maroon"
+        icon = "✅" if is_success else "❌"
 
         frame = ctk.CTkFrame(p, fg_color="#F9F7F0")
-        frame.pack(expand=True)
+        frame.pack(expand=True, padx=20, pady=20)
 
-        ctk.CTkLabel(frame, text=msg, font=("Helvetica", 14), justify="left").pack(pady=20)
-        ctk.CTkButton(frame,text="OK",command=lambda: self.close_popup_and_return(p)).pack(pady=10)
+        # Affichage du symbole et du message
+        ctk.CTkLabel(frame, text=f"{icon} {title}", font=("Helvetica", 18, "bold"), text_color=color).pack(pady=5)
+        ctk.CTkLabel(frame, text=msg, font=("Helvetica", 13), text_color=color, justify="center", wraplength=380).pack(pady=10)
+        
+        ctk.CTkButton(frame, text="OK", command=lambda: self.close_popup_and_return(p)).pack(pady=10)
 
 # Ajouter un exemplaire
 
@@ -285,24 +294,34 @@ class AjouterExemplairePage(ctk.CTkFrame):
         try:
             create_exemplaire(id_val,self.garantie_entry.get().strip(),self.entretien_entry.get().strip(),self.loc_entry.get().strip() or lieu, nom_mat )
         except Exception as e:
-            self.popup("Erreur", f"Impossible d'ajouter l'exemplaire :\n{e}")
+            self.popup("Erreur", f"Impossible d'ajouter l'exemplaire :\n{e}",is_success=False)
             return
 
-        self.popup("Succès", f"L'exemplaire {id_val} a été ajouté au matériel '{nom_mat}'.")
+        self.popup("Succès", f"L'exemplaire {id_val} a été ajouté au matériel '{nom_mat}'.",is_success=True)
 
     def close_popup_and_return(self, popup):
         popup.destroy()
         self.controller.show_page("MainPage")
 
     # --------------------------------------------------------------------
-    def popup(self, title, msg):
+    def popup(self, title, msg, is_success):
         p = ctk.CTkToplevel(self)
         p.geometry("420x180")
         p.title(title)
         p.configure(fg_color="#F9F7F0")
 
-        frame = ctk.CTkFrame(p, fg_color="#F9F7F0")
-        frame.pack(expand=True)
+        p.attributes('-topmost', True)  # Force la fenêtre au-dessus de toutes les autres
+        p.focus_force()                 # Donne le focus clavier/souris au popup
+        p.grab_set()                    # Rend le popup "modal" (bloque la fenêtre arrière)
 
-        ctk.CTkLabel(frame, text=msg, font=("Helvetica", 14), justify="left").pack(pady=20)
-        ctk.CTkButton(frame,text="OK",command=lambda: self.close_popup_and_return(p)).pack(pady=10)
+        color = "green" if is_success else "maroon"
+        icon = "✅" if is_success else "❌"
+
+        frame = ctk.CTkFrame(p, fg_color="#F9F7F0")
+        frame.pack(expand=True, padx=20, pady=20)
+
+        # Affichage du symbole et du message
+        ctk.CTkLabel(frame, text=f"{icon} {title}", font=("Helvetica", 18, "bold"), text_color=color).pack(pady=5)
+        ctk.CTkLabel(frame, text=msg, font=("Helvetica", 13), text_color=color, justify="center", wraplength=380).pack(pady=10)
+        
+        ctk.CTkButton(frame, text="OK", command=lambda: self.close_popup_and_return(p)).pack(pady=10)
