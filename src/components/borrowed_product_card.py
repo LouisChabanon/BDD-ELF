@@ -29,7 +29,8 @@ class BorrowedProductCard(ctk.CTkFrame):
         self.prenom = product.get("prenom")
         self.nom_user = product.get("nom")
         self.id_exemplaire = product.get("id_exemplaire")
-        self.date_rendu = product.get("date_rendu")
+        self.motif = product.get("motif")
+        self.date_emprunt = product.get("date_emprunt")
         
         # Stock (non affiché mais conservé pour compatibilité)
         self.stock_count = product.get("stock_dispo", 0)
@@ -116,15 +117,17 @@ class BorrowedProductCard(ctk.CTkFrame):
         Affiche uniquement les infos d'emprunt
         """
         # Sécurisation minimale (évite crash si champ manquant)
+        date_emprunt = self.date_emprunt if self.date_emprunt else "?"
         prenom = self.prenom if self.prenom else "?"
         nom = self.nom_user if self.nom_user else "?"
         id_ex = self.id_exemplaire if self.id_exemplaire else "?"
-        date = self.date_rendu if self.date_rendu else "?"
+        motif = self.motif if self.motif else "?"
 
         info_text = (
+            f"Date d'emprunt : {date_emprunt}\n"
             f"Emprunté par : {prenom} {nom}\n"
             f"ID exemplaire : {id_ex}\n"
-            f"Date de rendu : {date}"
+            f"Motif : {motif}"
         )
 
         self.lbl_stock.configure(
