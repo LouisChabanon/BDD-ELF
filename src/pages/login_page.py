@@ -5,6 +5,7 @@ from database.queries import get_user_by_id
 import threading
 from pyzbar import pyzbar
 import cv2
+from utils.code_barre import parse_vcard
 
 class LoginPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -103,6 +104,21 @@ class LoginPage(ctk.CTkFrame):
         cv2.destroyAllWindows()
 
     def fill_and_validate(self, code):
+        if code.startswith("BEGIN:VCARD"):
+            data = parse_vcard(code)
+
+            if "email" in data:
+                # Générer un identifiant à partir du mail
+                username = username = hash(data["email"]) % 1000000
+                self.username_entry.delete(0, 'end')
+                self.username_entry.insert(0, username)
+
+        else:
+            # Cas code-barres classique
+            self.username_entry.delete(0, 'end')
+            self.username_entry.insert(0, code)
+
+        # Lancer l'inscription
+        self.login()
         self.username_entry.delete(0, 'end')
         self.username_entry.insert(0, code)
-        self.login()

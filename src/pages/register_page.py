@@ -4,6 +4,7 @@ from utils.session import set_session
 import threading
 from pyzbar import pyzbar
 import cv2
+from utils.code_barre import parse_vcard
 
 class RegisterPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -116,24 +117,6 @@ class RegisterPage(ctk.CTkFrame):
         set_session(user)
 
         self.controller.show_page("MainPage")
-
-    def parse_vcard(self, vcard_text):
-        #Permet de récupérer les informations du QR-code carte ENSAM
-        data = {}
-        lines = vcard_text.splitlines()
-        for line in lines:
-            if line.startswith("N:"):
-                parts = line[2:].split(";")
-                data["nom"] = parts[0]
-                data["prenom"] = parts[1] if len(parts) > 1 else ""
-
-            elif line.startswith("FN:"):
-                data["full_name"] = line[3:]
-
-            elif line.startswith("EMAIL"):
-                data["email"] = line.split(":")[1]
-
-        return data
     
     def start_scanner(self):
         thread = threading.Thread(target=self.scan_barcode)
@@ -175,7 +158,7 @@ class RegisterPage(ctk.CTkFrame):
 
     def fill_and_validate(self, code):
         if code.startswith("BEGIN:VCARD"):
-            data = self.parse_vcard(code)
+            data = parse_vcard(code)
 
             # Remplissage automatique
             if "prenom" in data:
