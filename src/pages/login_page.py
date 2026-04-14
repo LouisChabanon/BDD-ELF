@@ -2,6 +2,9 @@ import customtkinter as ctk
 from components.bandeau_sup import Band_sup
 from utils.session import set_session
 from database.queries import get_user_by_id
+import threading
+from pyzbar import pyzbar
+import cv2
 
 class LoginPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -37,6 +40,9 @@ class LoginPage(ctk.CTkFrame):
         self.register_button = ctk.CTkButton(self, text="Inscription", font=("Helvetica", 16), command=lambda: controller.show_page("RegisterPage"))
         self.register_button.pack(pady=10)
 
+        #Scann avec la caméra
+        ctk.CTkButton(self,text="Scanner avec la caméra",command=self.start_scanner).pack(pady=10)
+
         # Message d'erreur
         self.error_label = ctk.CTkLabel(self, text="", font=("Helvetica", 14), text_color="maroon")
         self.error_label.pack(pady=10)
@@ -59,3 +65,44 @@ class LoginPage(ctk.CTkFrame):
         print(f"Utilisateur '{username}' connecté avec succès.")
         set_session(user)
         self.controller.show_page("MainPage")
+
+    def start_scanner(self):
+        thread = threading.Thread(target=self.scan_barcode)
+        thread.daemon = True
+        thread.start()
+
+    def scan_barcode(self):
+        cap = cv2.VideoCapture(0)
+
+        scanned = None
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            barcodes = pyzbar.decode(frame)
+
+            for barcode in barcodes:
+                scanned = barcode.data.decode("utf-8")
+                
+                # Dès qu'on a un code → on arrête
+                cap.release()
+                cv2.destroyAllWindows()
+
+                # ⚠️ IMPORTANT : interaction avec Tkinter = via after()
+                self.after(0, lambda: self.fill_and_validate(scanned))
+                return
+
+            cv2.imshow("Scanner", frame)
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        cap.release()
+        cv2.destroyAllWindows()
+
+    def fill_and_validate(self, code):
+        self.username_entry.delete(0, 'end')
+        self.username_entry.insert(0, code)
+        self.login()
