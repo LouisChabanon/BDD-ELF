@@ -402,7 +402,8 @@ def get_borrowed_items(user_id):
             em.date_emprunt,
             ex.id_exemplaire,
             p.nom,
-            p.prenom
+            p.prenom,
+            em.motif
         FROM Emprunt em
         JOIN Exemplaire ex ON em.id_exemplaire = ex.id_exemplaire
         JOIN Materiel m ON ex.nom_materiel = m.nom_materiel
