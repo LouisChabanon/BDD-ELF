@@ -246,6 +246,8 @@ class AjouterExemplairePage(ctk.CTkFrame):
         # actions
         actions = ctk.CTkFrame(main, fg_color="#F9F7F0")
         actions.pack(fill="x", pady=20)
+        # On lie l'événement de visibilité à notre méthode de reset
+        self.bind("<Visibility>", lambda e: self.reset_form())
 
         ctk.CTkButton(actions, text="💾 Ajouter l’exemplaire",
                       font=("Helvetica", 16, "bold"),
@@ -253,8 +255,28 @@ class AjouterExemplairePage(ctk.CTkFrame):
 
         ctk.CTkButton(actions, text="Annuler",
                       command=lambda: controller.show_page("AjouterObjetPage")).pack(side="left", padx=10)
-
     # --------------------------------------------------------------------
+    def reset_form(self):
+            # 1. Vider les champs de saisie (Entry)
+            self.id_entry.delete(0, 'end')
+            self.garantie_entry.delete(0, 'end')
+            self.entretien_entry.delete(0, 'end')
+            self.loc_entry.delete(0, 'end')
+            
+            # 2. Recharger et mettre à jour les ComboBox depuis la DB
+            nouveaux_mats = self.load_materiels()
+            self.mat_combo.configure(values=nouveaux_mats)
+            if nouveaux_mats:
+                self.mat_combo.set(nouveaux_mats[0])
+
+            nouveaux_lieux = self.load_rangements()
+            self.lieu_combo.configure(values=nouveaux_lieux)
+            if nouveaux_lieux:
+                self.lieu_combo.set(nouveaux_lieux[0])
+
+            # 3. Effacer les messages d'erreur résiduels
+            self.error_label.configure(text="")
+
     def load_materiels(self):
         mats = get_all_materiels()
         if not mats:
@@ -266,6 +288,7 @@ class AjouterExemplairePage(ctk.CTkFrame):
         return lst if lst else ["Aucun rangement"]
 
     # --------------------------------------------------------------------
+
     def save_exemplaire(self):
         id_val = self.id_entry.get().strip()
         nom_mat = self.mat_combo.get().strip()

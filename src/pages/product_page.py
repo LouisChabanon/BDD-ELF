@@ -115,6 +115,7 @@ class ProductPage(ctk.CTkFrame):
             status_color = "#8FBC8F" if is_avail else "#C94C3E"
             
             ctk.CTkLabel(row, text=status_text, text_color=status_color, font=("Helvetica", 12, "bold")).pack(side="left", padx=20)
+            
 
     def confirm_rent_product(self, item):
         """
