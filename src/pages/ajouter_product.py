@@ -247,7 +247,7 @@ class AjouterExemplairePage(ctk.CTkFrame):
         actions = ctk.CTkFrame(main, fg_color="#F9F7F0")
         actions.pack(fill="x", pady=20)
         # On lie l'événement de visibilité à notre méthode de reset
-        self.bind("<Visibility>", lambda e: self.reset_form())
+        self.bind("<Visibility>", lambda e: self.refresh())
 
         ctk.CTkButton(actions, text="💾 Ajouter l’exemplaire",
                       font=("Helvetica", 16, "bold"),
@@ -256,7 +256,7 @@ class AjouterExemplairePage(ctk.CTkFrame):
         ctk.CTkButton(actions, text="Annuler",
                       command=lambda: controller.show_page("AjouterObjetPage")).pack(side="left", padx=10)
     # --------------------------------------------------------------------
-    def reset_form(self):
+    def refresh(self):
             # 1. Vider les champs de saisie (Entry)
             self.id_entry.delete(0, 'end')
             self.garantie_entry.delete(0, 'end')
@@ -282,6 +282,7 @@ class AjouterExemplairePage(ctk.CTkFrame):
         if not mats:
             return ["Aucun matériel"]
         return [m["nom_materiel"] for m in mats]
+    
 
     def load_rangements(self):
         lst = get_all_rangements()
