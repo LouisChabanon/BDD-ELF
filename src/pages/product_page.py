@@ -108,6 +108,7 @@ class ProductPage(ctk.CTkFrame):
             
             ctk.CTkLabel(row, text=f"#{item['id_exemplaire']}", font=("Courier", 14, "bold"), width=80).pack(side="left", padx=10, pady=10)
             ctk.CTkLabel(row, text=item.get('lieu_rangement', 'N/A'), width=150).pack(side="left", padx=10)
+            ctk.CTkLabel(row, text=item.get('date_dernier_entretient'), width=150).pack(side='left',padx=10)
             
             is_avail = item['is_available']
             status_text = "DISPONIBLE" if is_avail else "EMPRUNTÉ"
