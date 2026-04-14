@@ -1,6 +1,9 @@
 import customtkinter as ctk
 from database.queries import get_all_users, add_user
 from utils.session import set_session
+import threading
+from pyzbar import pyzbar
+import cv2
 
 class RegisterPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -19,6 +22,9 @@ class RegisterPage(ctk.CTkFrame):
         self.username_label.pack(pady=10)
         self.username_entry = ctk.CTkEntry(self, width=300, font=("Helvetica", 16))
         self.username_entry.pack(pady=10)
+
+        #Scann avec la caméra
+        ctk.CTkButton(self,text="Scanner avec la caméra",command=self.start_scanner).pack(pady=5)
 
         #Nom
         self.name_label = ctk.CTkLabel(self, text="Nom : ", font=("Helvetica", 16),text_color="#4A4947")
@@ -110,3 +116,89 @@ class RegisterPage(ctk.CTkFrame):
         set_session(user)
 
         self.controller.show_page("MainPage")
+
+    def parse_vcard(self, vcard_text):
+        #Permet de récupérer les informations du QR-code carte ENSAM
+        data = {}
+        lines = vcard_text.splitlines()
+        for line in lines:
+            if line.startswith("N:"):
+                parts = line[2:].split(";")
+                data["nom"] = parts[0]
+                data["prenom"] = parts[1] if len(parts) > 1 else ""
+
+            elif line.startswith("FN:"):
+                data["full_name"] = line[3:]
+
+            elif line.startswith("EMAIL"):
+                data["email"] = line.split(":")[1]
+
+        return data
+    
+    def start_scanner(self):
+        thread = threading.Thread(target=self.scan_barcode)
+        thread.daemon = True
+        thread.start()
+
+    def scan_barcode(self):
+        cap = cv2.VideoCapture(0)
+
+        scanned = None
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            barcodes = pyzbar.decode(frame)
+
+            for barcode in barcodes:
+                #if barcode.type == "QRCODE":
+                #    continue  # on ignore les QR codes
+                scanned = barcode.data.decode("utf-8")
+                
+                # Dès qu'on a un code → on arrête
+                cap.release()
+                cv2.destroyAllWindows()
+
+                # ⚠️ IMPORTANT : interaction avec Tkinter = via after()
+                self.after(0, lambda: self.fill_and_validate(scanned))
+                return
+
+            cv2.imshow("Scanner", frame)
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        cap.release()
+        cv2.destroyAllWindows()
+
+    def fill_and_validate(self, code):
+        if code.startswith("BEGIN:VCARD"):
+            data = self.parse_vcard(code)
+
+            # Remplissage automatique
+            if "prenom" in data:
+                self.firstname_entry.delete(0, 'end')
+                self.firstname_entry.insert(0, data["prenom"])
+
+            if "nom" in data:
+                self.name_entry.delete(0, 'end')
+                self.name_entry.insert(0, data["nom"])
+
+            if "email" in data:
+                self.email_entry.delete(0, 'end')
+                self.email_entry.insert(0, data["email"])
+
+                # Générer un identifiant à partir du mail
+                username = username = hash(data["email"]) % 1000000
+                self.username_entry.delete(0, 'end')
+                self.username_entry.insert(0, username)
+
+        else:
+            # Cas code-barres classique
+            self.username_entry.delete(0, 'end')
+            self.username_entry.insert(0, code)
+
+        # Lancer l'inscription
+        self.register()
