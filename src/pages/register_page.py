@@ -5,6 +5,13 @@ import threading
 from pyzbar import pyzbar
 import cv2
 from utils.code_barre import parse_vcard
+import hashlib
+
+def generate_user_id(value):
+    if isinstance(value,str):
+        value = str(value).strip().lower()
+        return int(hashlib.sha256(value.encode()).hexdigest(), 16) % (10**9)
+    
 
 class RegisterPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -69,7 +76,7 @@ class RegisterPage(ctk.CTkFrame):
         self.back_button.place(relx=0.95, rely=0.95, anchor="se")
 
     def register(self, event=None):
-        username = self.username_entry.get().strip()
+        username = self.username_entry.get().lower().strip()
         firstname = self.firstname_entry.get().strip()
         name = self.name_entry.get().strip()
         email = self.email_entry.get().strip()
@@ -89,7 +96,12 @@ class RegisterPage(ctk.CTkFrame):
             self.error_label.configure(text="Veuillez entrer une adresse email valide.")
             return
         self.error_label.configure(text="")  # Effacer le message d'erreur
-        
+
+        if username.isdigit():
+            pass
+        else :
+            username = generate_user_id(username)
+
         # Verifier si l'utilisateur existe déjà dans la base
         existing_users = get_all_users()
         for user in existing_users:
@@ -97,9 +109,10 @@ class RegisterPage(ctk.CTkFrame):
                 self.error_label.configure(text="Un utilisateur avec cet identifiant ou email existe déjà.")
                 return
         
+
         # Inscrire l'utilisateur dans la base
         try:
-            add_user(int(username), email, "doctorant", name, firstname)
+            add_user(username, email, "doctorant", name, firstname)
         except ValueError as ve:
             self.error_label.configure(text=str(ve))
             return
@@ -107,7 +120,7 @@ class RegisterPage(ctk.CTkFrame):
         
         # Objet user analogue à celui retourné par la fonction de login (peut-être à refactorer plus tard)
         user = {
-            "id_personnel": int(username),
+            "id_personnel": str(username),
             "mail": email,
             "type_personnel": "doctorant",
             "nom": name,
@@ -174,9 +187,9 @@ class RegisterPage(ctk.CTkFrame):
                 self.email_entry.insert(0, data["email"])
 
                 # Générer un identifiant à partir du mail
-                username = username = hash(data["email"]) % 1000000
+                email = data["email"].lower().strip()
                 self.username_entry.delete(0, 'end')
-                self.username_entry.insert(0, username)
+                self.username_entry.insert(0, email)
 
         else:
             # Cas code-barres classique

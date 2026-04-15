@@ -6,6 +6,8 @@ import threading
 from pyzbar import pyzbar
 import cv2
 from utils.code_barre import parse_vcard
+import hashlib
+from pages.register_page import generate_user_id
 
 class LoginPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -51,13 +53,19 @@ class LoginPage(ctk.CTkFrame):
         self.username_entry.focus_set()
 
     def login(self, manual=False):
-        username = self.username_entry.get().strip()
+        username = self.username_entry.get().lower().strip()
         print(f"Utilisateur '{username}' tente de se connecter.")
 
         if not username:
             self.error_label.configure(text="Veuillez entrer un identifiant valide.")
             return
-        
+
+        if username.isdigit():
+            pass
+        else :
+            username = generate_user_id(username)
+
+
         user = get_user_by_id(username)
         if user is None:
             self.error_label.configure(text="Identifiant inconnu. Veuillez vous inscrire.")
@@ -109,9 +117,9 @@ class LoginPage(ctk.CTkFrame):
 
             if "email" in data:
                 # Générer un identifiant à partir du mail
-                username = username = hash(data["email"]) % 1000000
+                email = data["email"].lower().strip()
                 self.username_entry.delete(0, 'end')
-                self.username_entry.insert(0, username)
+                self.username_entry.insert(0, email)
 
         else:
             # Cas code-barres classique
