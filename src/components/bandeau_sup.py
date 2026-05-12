@@ -11,12 +11,12 @@ class Band_sup(ctk.CTkFrame):
         self.configure(fg_color="#B17457", height=60)
         
         # Grille flexible
-        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=0)
-        self.grid_columnconfigure(2, weight=0)
+        self.grid_columnconfigure(2, weight=1) 
         self.grid_columnconfigure(3, weight=0)
         self.grid_columnconfigure(4, weight=0)
-
+        self.grid_columnconfigure(5, weight=0)        
         self.user_button = None
 
         # Bouton Accueil
@@ -30,7 +30,7 @@ class Band_sup(ctk.CTkFrame):
             command=lambda: self.controller.show_page("AjouterObjetPage")
 ,
         )
-        self.add_button.grid(row=0, column=1, sticky="e", padx=10, pady=10)
+        self.add_button.grid(row=0, column=3, sticky="e", padx=10, pady=10)
 
         # Bouton "Rendre"
         self.return_button = ctk.CTkButton(
@@ -38,7 +38,7 @@ class Band_sup(ctk.CTkFrame):
             text="Rendre", 
             command=self.return_page,
         )
-        self.return_button.grid(row=0, column=2, sticky="e", padx=10, pady=10)
+        self.return_button.grid(row=0, column=4, sticky="e", padx=10, pady=10)
 
         # Bouton "Emprunts actuels"
         self.current_loans_button = ctk.CTkButton(
@@ -46,7 +46,7 @@ class Band_sup(ctk.CTkFrame):
             text="Voir tous les emprunts",
             command=lambda: self.controller.show_page("CurrentLoansPage")
         )
-        self.current_loans_button.grid(row=0, column=3, sticky="e", padx=10, pady=10)
+        self.current_loans_button.grid(row=0, column=5, sticky="e", padx=10, pady=10)
 
     def refresh(self, args=None):
         """Met à jour le bouton utilisateur ou connexion."""
@@ -56,7 +56,7 @@ class Band_sup(ctk.CTkFrame):
         self.user = get_session()
 
         if self.user:
-            self.home_button.grid(row=0, column=4, sticky="e", padx=10, pady=10)
+            self.home_button.grid(row=0, column=0, sticky="w", padx=10, pady=10)
         else:
             self.home_button.grid_forget()
 
@@ -90,7 +90,7 @@ class Band_sup(ctk.CTkFrame):
                 **button_style
             )
 
-        self.user_button.grid(row=0, column=0, sticky="w", padx=20, pady=10)
+        self.user_button.grid(row=0, column=1, sticky="w", padx=10, pady=10)
 
     # Méthodes associées aux boutons 
         
